@@ -2,11 +2,15 @@ function HanafudaCard({ id, name, month, flower, image, points, isLight, isSeed,
 
 	return React.createElement(
 		"div", {
+			id: id,
+			key: id,
+			className: "hanafudacard",
 			style: {
 				height: 204,
 				width: 121,
+				margin: 2, 
+				display: "inline-block"
 			},
-			id: id,
 			name: name,
 			month: month,
 			flower: flower,
