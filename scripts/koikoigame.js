@@ -87,9 +87,9 @@ const allSets = [
 	/* jp. Akatan Aotan no Choufuku */ 	{ id: "AAC",	key: "AAC",		name: "Red and Blue Poetry Slips",		calculatePoints: (collection) => { return 10; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3) && containsAtLeast(collection, (card) => card.isBlue, 3); }},
 	/* jp. Akatan */ 					{ id: "RP",		key: "RP",		name: "Red Poetry Slips",				calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3);		}},
 	/* jp. Aotan */ 					{ id: "BP",		key: "BP",		name: "Blue Poetry Slips",				calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isBlue,	3);		}},
-	/* jp. Tsukifuda */ 				{ id: "M",		key: "M",		name: "Month",							calculatePoints: (collection) => { return 4;	},														meetsRequirement: (collection) => { return containsFourOfAKind(collection)								}},
-	/* jp. Tanzaku */ 					{ id: "P",		key: "5P",		name: "Slips",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSlip)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSlip,	5);		}},
-	/* jp. Tane */ 						{ id: "S",		key: "5S",		name: "Seeds",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSeed)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSeed,	5);		}},
+	/* jp. Tsukifuda */ //				{ id: "M",		key: "M",		name: "Month",							calculatePoints: (collection) => { return 4;	},														meetsRequirement: (collection) => { return containsFourOfAKind(collection)								}},
+	/* jp. Tanzaku */ 					{ id: "P",		key: "P",		name: "Slips",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSlip)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSlip,	5);		}},
+	/* jp. Tane */ 						{ id: "S",		key: "S",		name: "Seeds",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSeed)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSeed,	5);		}},
 	/* jp. Kasu */ 						{ id: "C",		key: "C",		name: "Chaff",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isChaff)	- 9;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isChaff,	10);	}},
 ];
 
@@ -107,7 +107,7 @@ const preRoundSets = [
 ];
 
 /*
-	This array assists functions determining cards belonging to a suit.
+	This array assists functions in dealing with suits.
 */
 const allMonths = [
 	"January",	
@@ -187,29 +187,36 @@ var shuffleDeck = function(deck) {
 */
 function KoiKoiGame() {
 
+	const [gameStarted, setGameStarted]					= React.useState(true);
+	const [gameEnded, setGameEnded]						= React.useState(false);
+	const [roundStarted, setRoundStarted]				= React.useState(false);
+	const [roundEnded, setRoundEnded]					= React.useState(false);
+	const [roundNumber, setRoundNumber]					= React.useState(0);
+	const [whoseTurn, setWhoseTurn]						= React.useState("");
+	const [dealer, setDealer]							= React.useState("");
+
 	const [opponentHand, setOpponentHand]				= React.useState([]);
 	const [opponentCollection, setOpponentCollection]	= React.useState([]);
 	const [opponentScore, setOpponentScore]				= React.useState([]);
 	const [opponentSets, setOpponentSets]				= React.useState([]);
+
 	const [deck, setDeck]								= React.useState(shuffleDeck([...allCards]));
 	const [board, setBoard]								= React.useState([]);
+
 	const [yourCollection, setYourCollection]			= React.useState([]);
 	const [yourHand, setYourHand]						= React.useState([]);
 	const [yourScore, setYourScore]						= React.useState([]);
 	const [yourSets, setYourSets]						= React.useState([]);
-	const [dealer, setDealer]							= React.useState("");
-	const [round, setRound]								= React.useState(0);
+
 	const [selectedCard, setSelectedCard]				= React.useState({});
 	const [availableMatches, setAvailableMatches]		= React.useState([]);
 	const [isTopDeck, setIsTopDeck]						= React.useState(false);
 	const [koiKoi, setKoiKoi]							= React.useState("");
+	const [roundWinner, setRoundWinner]					= React.useState("");
+	const [scoreMultiplier, setScoreMultiplier]			= React.useState(0);
 
 	const startGame = () => {
 		console.log("startGame");
-	};
-
-	const determineDealer = () => {
-		console.log("determineDealer");
 
 		/*
 			When the game begins, you determine the dealer by each player drawing a card from the deck.
@@ -217,6 +224,31 @@ function KoiKoiGame() {
 			If both players drew the same month, the one with the higher point value is the dealer.
 			The dealer has the privilege of taking the first turn (jp. Oya-Ken). 
 		*/
+		var yourCard = deck[0];
+		var opponentCard = deck[1];
+
+		setYourHand([yourCard]);
+		setOpponentHand([opponentCard]);
+
+		if (allMonths.indexOf(yourCard.month) < allMonths.indexOf(opponentCard.month)) {
+			setDealer("you");
+		}
+		else if (allMonths.indexOf(yourCard.month) > allMonths.indexOf(opponentCard.month)) {
+			setDealer("opponent");
+		}
+		else {
+			if (yourCard.points > opponentCard.points) {
+				setDealer("you");
+			}
+			else if (yourCard.points < opponentCard.points) {
+				setDealer("opponent");
+			}
+			else {
+				setDealer("you"); // Just fail safe and give it to the human.
+			}
+		}
+
+		setGameEnded(false);
 	};
 
 	const startRound = () => {
@@ -224,10 +256,18 @@ function KoiKoiGame() {
 
 		// Cards are dealt in this order: 8 to the other player (jp. Ko), 8 to the board, 8 to the dealer.
 		var clone = shuffleDeck([...allCards]);
-		setOpponentHand(clone.slice(0, 8));
-		setBoard(clone.slice(8, 16));
-		setYourHand(clone.slice(16, 24));
-		setDeck(clone.slice(24, 48));
+		if (dealer == "you") {
+			setOpponentHand(clone.slice(0, 8));
+			setBoard(clone.slice(8, 16));
+			setYourHand(clone.slice(16, 24));
+			setDeck(clone.slice(24, 48));
+		}
+		else {
+			setYourHand(clone.slice(0, 8));
+			setBoard(clone.slice(8, 16));
+			setOpponentHand(clone.slice(16, 24));
+			setDeck(clone.slice(24, 48));
+		}
 
 		setYourCollection([]);
 		setYourSets([]);
@@ -238,8 +278,13 @@ function KoiKoiGame() {
 		setSelectedCard({});
 		setAvailableMatches([]);	
 		setKoiKoi("");
+		setRoundWinner("");
+		setScoreMultiplier(0);
 
-		setRound(round + 1);
+		setRoundNumber(roundNumber + 1);
+		setWhoseTurn(dealer);
+
+		setRoundEnded(false);
 	};
 
 	const checkForPreRoundSets = () => {
@@ -249,34 +294,31 @@ function KoiKoiGame() {
 		var boardPreSets = [...preRoundSets].filter(s => s.meetsRequirement(board));
 		if (boardPreSets.length > 0) {
 
-			endRound("");
+			setRoundWinner("");
+			setScoreMultiplier(0);
+			setRoundStarted(false);
+			setRoundEnded(true);
 		}
 
 		var yourPreSets = [...preRoundSets].filter(s => s.meetsRequirement(yourHand));
 		if (yourPreSets.length > 0) {
 
 			setYourSets([...yourPreSets]);
-			endRound("you");
+			setRoundWinner("you");
+			setScoreMultiplier(1);
+			setRoundStarted(false);
+			setRoundEnded(true);
 		}
 
 		var opponentPreSets = [...preRoundSets].filter(s => s.meetsRequirement(opponentHand));
 		if (opponentPreSets.length > 0) {
 
 			setOpponentSets([...opponentPreSets]);
-			endRound("opponent");
+			setRoundWinner("opponent");
+			setScoreMultiplier(1);
+			setRoundStarted(false);
+			setRoundEnded(true);
 		}
-	};
-
-	const selectCardFromHand = (card) => {
-		console.log("selectCardFromHand");
-
-		setSelectedCard(card);
-	};
-
-	const evaluateMatches = (card) => {
-		console.log("evaluateMatches");
-
-		return board.filter(c => c.month == card.month); // I don't like how this works. See selectCardFromHand.
 	};
 
 	const captureMatchingCards = (firstCard, secondCard) => {
@@ -287,21 +329,38 @@ function KoiKoiGame() {
 
 			var remainingCards = availableMatches.filter(c => c.id !== secondCard.id);
 
-			setYourCollection([...yourCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+			if (whoseTurn == "you") {
+				setYourCollection([...yourCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+			}
+			else {
+				setOpponentCollection([...opponentCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+			}
+
 			setBoard(board.filter(c => c.id !== secondCard.id && c.id !== remainingCards[0].id && c.id !== remainingCards[1].id));
 		}
 		else {
 
-			setYourCollection([...yourCollection, firstCard, secondCard]);
+			if (whoseTurn == "you") {
+				setYourCollection([...yourCollection, firstCard, secondCard]);
+			}
+			else {
+				setOpponentCollection([...opponentCollection, firstCard, secondCard]);
+			}
+
 			setBoard(board.filter(c => c.id !== secondCard.id));
 		}
 
-		/*
-			I filter both your hand and the deck, in case you captured with a top deck.
-			Filtering a card from a collection that doesn't contain it, predictably, just returns the original collection.
-		*/
-		setYourHand(yourHand.filter(c => c.id !== firstCard.id));		
-		setDeck(deck.filter(c => c.id !== firstCard.id));
+		if (isTopDeck) {
+			setDeck(deck.filter(c => c.id !== firstCard.id));
+		}
+		else {
+			if (whoseTurn == "you") {
+				setYourHand(yourHand.filter(c => c.id !== firstCard.id));
+			}
+			else {
+				setOpponentHand(opponentHand.filter(c => c.id !== firstCard.id));
+			}	
+		}
 
 		setSelectedCard({});
 		setAvailableMatches([]);
@@ -314,7 +373,18 @@ function KoiKoiGame() {
 		console.log("surrenderSelectedCard");
 
 		setBoard([...board, card]);
-		setYourHand(yourHand.filter(c => c.id !== card.id));
+
+		if (isTopDeck) {
+			setDeck(deck.filter(c => c.id !== card.id));
+		}
+		else {
+			if (whoseTurn == "you") {
+				setYourHand(yourHand.filter(c => c.id !== card.id));
+			}
+			else {
+				setOpponentHand(opponentHand.filter(c => c.id !== card.id));
+			}
+		}
 
 		setSelectedCard({});
 		setAvailableMatches([]);
@@ -325,74 +395,178 @@ function KoiKoiGame() {
 	const revealTopDeck = () => {
 		console.log("revealTopDeck");
 
-		// I save these variables locally because the state will not update with the new values until the next render.
-		var card = deck[0];
-		var matches = evaluateMatches(card);
-		setSelectedCard(card);
-		setAvailableMatches(matches);
-
-		// If there are no matches for the top deck, it is automatically placed on the board.
-		if (matches.length == 0) {
-
-			setBoard([...board, card]);
-			setDeck(deck.filter(c => c.id !== card.id));
-
-			setSelectedCard({});
-			setAvailableMatches([]);
-
-			setIsTopDeck(false);
-		}
+		setSelectedCard(deck[0]);
+		setAvailableMatches(board.filter(c => c.month == deck[0].month));
 	};
 
 	const checkForCompletedSets = () => {
 		console.log("checkForCompletedSets");
 
 		// We want to find sets you haven't already completed, except for those that calculate their points.
-		var completedSets = [...allSets]
-			.filter(s => s.meetsRequirement(yourCollection))
-			.filter(s => !yourSets.map(y => y.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
-
+		var completedSets = [];
+		if (whoseTurn == "you") {
+			completedSets = [...allSets]
+				.filter(s => s.meetsRequirement(yourCollection))
+				.filter(s => !yourSets.map(y => y.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
+		}
+		else {
+			completedSets = [...allSets]
+				.filter(s => s.meetsRequirement(opponentCollection))
+				.filter(s => !opponentSets.map(o => o.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
+		}
+		
 		if (completedSets.length > 0) {
 
-			setYourSets([...completedSets]);
+			var cardsToContinue = 0;
+			if (whoseTurn == "you") {
+				setYourSets([...yourSets, ...completedSets]);
+				cardsToContinue = yourHand.length;
+			}
+			else {
+				setOpponentSets([...opponentSets, ...completedSets]);
+				cardsToContinue = opponentHand.length;
+			}
 
-			if (koiKoi) {
+			if (koiKoi == "" && cardsToContinue > 0) {
+				var calledKoiKoi = decideToKoiKoi(whoseTurn); // Do it you coward.
 
-				endRound("you");
+				if (calledKoiKoi) {
+					swapTurns();
+				}
+				else {
+					setRoundWinner(whoseTurn);
+					setScoreMultiplier(1);
+					setRoundStarted(false);
+					setRoundEnded(true);
+				} 
+			}
+			else {
+				if (koiKoi == whoseTurn) {
+					setRoundWinner(whoseTurn);
+					setScoreMultiplier(1);
+					setRoundStarted(false);
+					setRoundEnded(true);
+				}
+				else {
+					setRoundWinner(whoseTurn);
+					setScoreMultiplier(2);
+					setRoundStarted(false);
+					setRoundEnded(true);
+				}
+			}
+		}
+		else {
+			if (yourHand.length == 0 && opponentHand.length == 0) {
+
+				// A rare stalemate condition where nobody completes a single set before running out of cards in hand.
+				setRoundWinner("");
+				setScoreMultiplier(0);
+				setRoundStarted(false);
+				setRoundEnded(true);
 			}
 			else {
 
-				callKoiKoi("you");
+				// Normal turn ending. MOVE THIS SO IT DOESNT MESS UP TURN ORDER.
+				swapTurns(); 
 			}
 		}
 	};
 
-	const callKoiKoi = (caller) => {
-		console.log("callKoiKoi");
+	const decideToKoiKoi = (caller) => {
+		console.log("decideToKoiKoi");
 
-		setKoiKoi("you");
+		if (caller == "you") {
+			if (confirm("Do you want to Koi Koi?")) {
+
+				setKoiKoi("you");
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			if (opponentHand.length > 3) {
+
+				setKoiKoi("opponent");
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	};
 
-	const endRound = (winner) => {
+	const swapTurns = () => {
+		console.log("swapTurns");
+
+		setWhoseTurn(whoseTurn == "you" ? "opponent" : "you");
+	};
+
+	const endRound = () => {
 		console.log("endRound");
 
+		/*
+			There are two opportunities for score multipliers.
+			If you win the round after your opponent called Koi Koi, you double your score. (This is parameterized.)
+			If you complete sets totalling 7 points or more, you double your score. (This is calculated here.)
+			These effects can stack leading to a quadruple multiplier.
+		*/
 		var newScore = 0;
-		yourSets.forEach(s => newScore += s.calculatePoints(yourCollection));
+		if (roundWinner == "you") {
+			yourSets.forEach(s => newScore += s.calculatePoints(yourCollection));
 
-		setYourScore([...yourScore, newScore]);
-		setOpponentScore([...opponentScore, 0]);
+			newScore = newScore * scoreMultiplier * (newScore >= 7 ? 2 : 1);
 
-		setDealer(winner);
+			setYourScore([...yourScore, newScore]);
+			setOpponentScore([...opponentScore, 0]);
+			setDealer("you");
+		}
+		else if (roundWinner == "opponent") {
+			opponentSets.forEach(s => newScore += s.calculatePoints(opponentCollection));
+
+			newScore = newScore * scoreMultiplier * (newScore >= 7 ? 2 : 1);
+
+			setOpponentScore([...opponentScore, newScore]);
+			setYourScore([...yourScore, 0]);
+			setDealer("opponent");
+		}
+		else {
+
+			/*
+				Don't forget possible stalemates, b/c of either a pre-round set on board, 
+				or because no sets were made by either player. 
+				In a stalemate, the dealer doesn't change.
+			*/
+			setYourScore([...yourScore, 0]);
+			setOpponentScore([...opponentScore, 0]);
+		}
+
+		if (roundNumber == 12) {
+			setGameStarted(false);
+			setGameEnded(true);
+		}
+
+		setRoundStarted(false);
 	};
 
-	const endGame = (winner) => {
+	const endGame = () => {
 		console.log("endGame");
+
+
 	};
 
+	// This effectively handles all user input.
 	const handleClick = (card) => {
 		console.log("handleClick");
 
-		// Is this the top card of the deck?
+		// You can't click anything if it's not during a round.
+		if (!roundStarted || roundEnded) {
+			console.log("You cannot select cards before a round has begun or after it has ended.");
+			return;
+		}
+
+		// Are we playing the top card of the deck?
 		if (isTopDeck) {
 
 			// Is the card you clicked in your hand or on the board?
@@ -400,7 +574,7 @@ function KoiKoiGame() {
 
 				console.log("You cannot select cards in your hand when the selected card is the top deck.");
 			}
-			else {
+			else if (containsCard(board, card.id)) {
 
 				// Is your clicked card an available match?
 				if (containsCard(availableMatches, card.id)) {
@@ -412,6 +586,11 @@ function KoiKoiGame() {
 
 					console.log("Your selected card and clicked card don't match.");
 				}
+			}
+			else {
+
+				// Surrender the top deck card.
+				surrenderSelectedCard(selectedCard);
 			}
 		}
 		else {
@@ -436,8 +615,8 @@ function KoiKoiGame() {
 				else {
 
 					// Selected a new card.
-					selectCardFromHand(card);
-					setAvailableMatches(evaluateMatches(card));
+					setSelectedCard(card);
+					setAvailableMatches(board.filter(c => c.month == card.month));
 				}	
 			}
 			else {
@@ -464,78 +643,172 @@ function KoiKoiGame() {
 		}
 	};
 
+	// This is a primitive opponent to play against. Its primary purpose is to make the state machine move as intended.
+	const handleOpponent = () => {
+		console.log("handleOpponent");
+
+		var sortByPoints = function(x, y) { return x.points < y.points ? 1 : x.points > y.points ? -1 : 0; };
+		var matches = [];
+		if (isTopDeck) {
+			var card = deck[0];
+			matches = board
+				.filter(c => c.month == card.month)
+				.sort(sortByPoints);
+			if (matches.length > 0) {
+				captureMatchingCards(card, matches[0]);
+			} 
+			else {
+				surrenderSelectedCard(card);
+			}
+		}
+		else {	
+			var hand = opponentHand.sort(sortByPoints);
+			for (var card of hand) {
+				matches = board
+					.filter(c => c.month == card.month)
+					.sort(sortByPoints);
+				if (matches.length > 0) {
+					captureMatchingCards(card, matches[0]);
+					break;
+				} 
+				else if (hand.indexOf(card) == hand.length - 1) {
+					surrenderSelectedCard(card);
+				}
+			}
+		}
+	};
+	
+	// UseEffect might be my least favorite part about React. Will look for better implementations of this.
+	React.useEffect(() => {
+		if (gameStarted) {
+			startGame();
+		}
+	}, [gameStarted]);
+
+	React.useEffect(() => {
+		if (roundStarted) {
+			startRound();
+		}
+	}, [roundStarted]);
+
 	/*
 		Conceptually, there are two major events in every turn: you play from your hand, and you play the top card of the deck.
 		After you play from your hand, regardless of its outcome, you must play the top card of the deck.
 		After you play from the deck, regardless of its outcome, we check from completed sets, and then the turn ends.
 
-		Altering isTopDeck allows us to trigger the next phase of the turn. 
-
-		UseEffect might be my least favorite part about React. Will look for better implementations of this.
+		Altering isTopDeck allows us to trigger the next phase of the turn.
 	*/
 	React.useEffect(() => {
-		if (isTopDeck) {
-			revealTopDeck();
-		}
-		else {
-			checkForCompletedSets();
+		if (roundStarted) {	
+			if (isTopDeck) {
+				revealTopDeck();
+			}
+			else {
+				checkForCompletedSets();
+			}
 		}
 	}, [isTopDeck]);
+
+	React.useEffect(() => {
+		if (roundStarted) {
+			if (whoseTurn == "opponent") {
+				handleOpponent();
+			}
+		}
+	}, [roundStarted, whoseTurn, isTopDeck]);
+
+	React.useEffect(() => {
+		if (roundEnded) {
+			endRound();
+		}
+	}, [roundEnded]);
 
 	// The main render. The first element must be on the same line as return.
 	return React.createElement("div", { className: "koikoigame" },
 		React.createElement("div", null,
-			React.createElement("button", { onClick: startRound }, "Start a round")),
-		React.createElement("div",  null,
-			React.createElement("span", null, "Round " + round + " / 12")),
-		React.createElement("h2", null, "Opponent's Hand"),
-		React.createElement("div", { id: "opponenthand" }, 
-			opponentHand.map((card) => 
-				React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }))),
+			React.createElement("button", { onClick: () => setRoundStarted(true) }, "Start a round")),
+			React.createElement("div",  null,
+				React.createElement("span", null, "Round " + roundNumber + " / 12")),
+			React.createElement("h2", null, "Opponent's Hand"),
+			React.createElement("div", { id: "opponenthand" }, 
+				opponentHand.map((card) => 
+					React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }))),
 
-		React.createElement("h2", null, "Opponent's Collection"),
-		React.createElement("div", { id: "opponentcollection" }, 
-			opponentCollection.map((card) => 
-				React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-					React.createElement("img", { src: card.image })))),
+			React.createElement("h2", null, "Opponent's Collection"),
+			React.createElement("div", { id: "opponentcollection" }, 
+				opponentCollection.map((card) => 
+					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
+						React.createElement("img", { src: card.image })))),
 
-		React.createElement("h2", null, "The Deck"),
-		React.createElement("div", { id: "deck" }, 
-			React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }),
-			React.createElement("div", { className: "hanafudacard", style: { margin: 2, height: 150, width: 92, display: isTopDeck ? "inline-block" : "none" }}, 
-						React.createElement("img", { src: deck[0].image }))),
+			React.createElement("h2", null, "The Deck"),
+			React.createElement("div", { id: "deck" }, 
+				React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }),
+				React.createElement("div", { className: "hanafudacard", style: { margin: 2, height: 150, width: 92, display: isTopDeck ? "inline-block" : "none" }}, 
+						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+							React.createElement("img", { src: deck[0].image })))),
 
-		React.createElement("h2", null, "The Board"),
-		React.createElement("div", { id: "board" }, 
-			board.map((card) => 
-				React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-					React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
-						React.createElement("img", { src: card.image }))))),
+			React.createElement("h2", null, "The Board"),
+			React.createElement("div", { id: "board" }, 
+				board.map((card) => 
+					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
+						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+							React.createElement("img", { src: card.image }))))),
 
-		React.createElement("h2", null, "Your Collection"),
-		React.createElement("div", { id: "yourcollection" }, 
-			yourCollection.map((card) => 
-				React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-					React.createElement("img", { src: card.image })))),
+			React.createElement("h2", null, "Your Collection"),
+			React.createElement("div", { id: "yourcollection" }, 
+				yourCollection.map((card) => 
+					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
+						React.createElement("img", { src: card.image })))),
 
-		React.createElement("h2", null, "Your Hand"),
-		React.createElement("div", { id: "yourhand" }, 
-			yourHand.map((card) => 
-				React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }},
-					React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
-						React.createElement("img", { src: card.image }))))),
+			React.createElement("h2", null, "Your Hand"),
+			React.createElement("div", { id: "yourhand" }, 
+				yourHand.map((card) => 
+					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }},
+						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+							React.createElement("img", { src: card.image }))))),
 
-		React.createElement("h2", null, "Scores"),
-		React.createElement("div", { id: "scores" }, 
-			React.createElement("table", null,
-				React.createElement("tbody", null,
-					React.createElement("tr", null,
-						React.createElement("td", null, "You"),
-						yourScore.map((score) => {
-							React.createElement("td", null, score)})),
-					React.createElement("tr", null,
-						React.createElement("td", null, "Opponent"),
-						opponentScore.map((score) => {
-							React.createElement("td", null, score)}))))),
+			React.createElement("h2", null, "Scores"),
+			React.createElement("div", { id: "scores" }, 
+				React.createElement("table", null,
+					React.createElement("tbody", null,
+						React.createElement("tr", null,
+							React.createElement("td", null, "You"),
+							yourScore.map((score) => 
+								React.createElement("td", null, score))),
+						React.createElement("tr", null,
+							React.createElement("td", null, "Opponent"),
+							opponentScore.map((score) => 
+								React.createElement("td", null, score)))))),
+
+			React.createElement("h2", null),
+			React.createElement("button", { onClick: () => {
+				var d = document.getElementById("debug");
+				d.style.display = d.style.display == "none" ? "block" : "none";
+			}}, "Toggle Debug Mode"),
+			React.createElement("div", { id: "debug", style: { display: "none" }},
+				React.createElement("h2", null, "Debug Mode"),
+				React.createElement("div", null, "gameStarted: " 		+ gameStarted.toString()),
+				React.createElement("div", null, "gameEnded: " 			+ gameEnded.toString()),
+				React.createElement("div", null, "roundStarted: " 		+ roundStarted.toString()),
+				React.createElement("div", null, "roundEnded: " 		+ roundEnded.toString()),
+				React.createElement("div", null, "roundNumber: " 		+ roundNumber),
+				React.createElement("div", null, "whoseTurn: " 			+ whoseTurn),
+				React.createElement("div", null, "dealer: " 			+ dealer),
+				React.createElement("div", null, "opponentHand: " 		+ opponentHand.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "opponentCollection: " + opponentCollection.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "opponentScore: " 		+ opponentScore.map(s => " " + s)),
+				React.createElement("div", null, "opponentSets: " 		+ opponentSets.map(s => " " + s.name)),
+				React.createElement("div", null, "deck: " 				+ deck.length + " cards remaining"),
+				React.createElement("div", null, "board: " 				+ board.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "yourCollection: " 	+ yourCollection.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "yourHand: " 			+ yourHand.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "yourScore: " 			+ yourScore.map(s => " " + s)),
+				React.createElement("div", null, "yourSets: " 			+ yourSets.map(s => " " + s.name)),
+				React.createElement("div", null, "selectedCard: " 		+ selectedCard.month + " " + selectedCard.name),
+				React.createElement("div", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "isTopDeck: " 			+ isTopDeck.toString()),
+				React.createElement("div", null, "koiKoi: " 			+ koiKoi),
+				React.createElement("div", null, "roundWinner: "		+ roundWinner),
+				React.createElement("div", null, "scoreMultiplier: "	+ scoreMultiplier)),
 	);
 }
