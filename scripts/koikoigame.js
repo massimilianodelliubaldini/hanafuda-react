@@ -265,87 +265,86 @@ function KoiKoiGame() {
 	const startRound = () => {
 		console.log("startRound");
 
-		// Cards are dealt in this order: 8 to the other player (jp. Ko), 8 to the board, 8 to the dealer.
 		var clone = shuffleDeck([...allCards]);
-		if (roundWinner == "" || roundWinner == "stalemate") {
-
-			if (dealer == "you") {
-				setOpponentHand(clone.slice(0, 8));
-				setBoard(clone.slice(8, 16));
-				setYourHand(clone.slice(16, 24));
-			}
-			else {
-				setYourHand(clone.slice(0, 8));
-				setBoard(clone.slice(8, 16));
-				setOpponentHand(clone.slice(16, 24));
-			}
-	
-			setWhoseTurn(dealer);
-		}
-		else {
-
-			if (roundWinner == "you") {
-				setOpponentHand(clone.slice(0, 8));
-				setBoard(clone.slice(8, 16));
-				setYourHand(clone.slice(16, 24));
-			}
-			else {
-				setYourHand(clone.slice(0, 8));
-				setBoard(clone.slice(8, 16));
-				setOpponentHand(clone.slice(16, 24));
-			}
-
-			setDealer(roundWinner);
-			setWhoseTurn(roundWinner);
-		}
-
+		var firstEight	= clone.slice(0, 8);
+		var secondEight	= clone.slice(8, 16);
+		var thirdEight	= clone.slice(16, 24);
 		setDeck(clone.slice(24, 48));
 
-		setYourCollection([]);
-		setYourSets([]);
+		// Dealer doesn't change if this is the first round or the last round ended in stalemate.
+		var firstPlayer = (roundWinner == "" || roundWinner == "stalemate") ? dealer : roundWinner;
+		var endRoundEarly = false;
+		setDealer(firstPlayer);
+	
+		// Cards are dealt in this order: 8 to the other player (jp. Ko), 8 to the board, 8 to the dealer.
+		if (firstPlayer == "you") {
+			setOpponentHand(firstEight);
+			setBoard(secondEight);
+			setYourHand(thirdEight);
 
+			endRoundEarly = checkForPreRoundSets(thirdEight, secondEight, firstEight); // Remember to pass variables in the correct order.
+		}
+		else {
+			setYourHand(firstEight);
+			setBoard(secondEight);
+			setOpponentHand(thirdEight);
+
+			endRoundEarly = checkForPreRoundSets(firstEight, secondEight, thirdEight); // Remember to pass variables in the correct order.
+		}
+
+		if (endRoundEarly) {
+			setRoundStarted(false);
+		}
+		else {
+			setWhoseTurn(firstPlayer);
+			setRoundWinner("");
+			setScoreMultiplier(0);
+
+			setYourSets([]);
+			setOpponentSets([]);
+		}
+
+		setYourCollection([]);
 		setOpponentCollection([]);
-		setOpponentSets([]);
 
 		setSelectedCard({});
 		setAvailableMatches([]);	
 		setKoiKoiCaller("");
-		setRoundWinner("");
-		setScoreMultiplier(0);
 
 		setRoundNumber(roundNumber + 1);	
 	};
 
-	// todo: implement this without breaking state logic flow.
-	const checkForPreRoundSets = () => {
+	const checkForPreRoundSets = (yourEight, boardsEight, opponentsEight) => {
 		console.log("checkForPreRoundSets");
 
 		// Check the board first.
-		var boardPreSets = [...preRoundSets].filter(s => s.meetsRequirement(board));
+		var boardPreSets = [...preRoundSets].filter(s => s.meetsRequirement(boardsEight));
 		if (boardPreSets.length > 0) {
 
 			setRoundWinner("stalemate");
 			setScoreMultiplier(0);
-			setRoundStarted(false);
+			return true;
 		}
 
-		var yourPreSets = [...preRoundSets].filter(s => s.meetsRequirement(yourHand));
+		var yourPreSets = [...preRoundSets].filter(s => s.meetsRequirement(yourEight));
 		if (yourPreSets.length > 0) {
 
 			setYourSets([...yourPreSets]);
 			setRoundWinner("you");
 			setScoreMultiplier(1);
-			setRoundStarted(false);
+			return true;
 		}
 
-		var opponentPreSets = [...preRoundSets].filter(s => s.meetsRequirement(opponentHand));
+		var opponentPreSets = [...preRoundSets].filter(s => s.meetsRequirement(opponentsEight));
 		if (opponentPreSets.length > 0) {
 
 			setOpponentSets([...opponentPreSets]);
 			setRoundWinner("opponent");
 			setScoreMultiplier(1);
-			setRoundStarted(false);
+			return true;
 		}
+
+		return false; 
 	};
 
 	const startTurn = () => {
@@ -560,8 +559,8 @@ function KoiKoiGame() {
 
 			newScore = newScore * scoreMultiplier * (newScore >= 7 ? 2 : 1);
 
-			setOpponentScore([...opponentScore, newScore]);
 			setYourScore([...yourScore, 0]);
+			setOpponentScore([...opponentScore, newScore]);
 		}
 		else {
 
@@ -582,7 +581,24 @@ function KoiKoiGame() {
 	const endGame = () => {
 		console.log("endGame");
 
+		var yourTotal = 0;
+		var opponentTotal = 0;
 
+		yourScore.forEach(s => yourTotal += s);
+		opponentScore.forEach(s => opponentTotal += s);
+
+		setYourScore([...yourScore, yourTotal]);
+		setOpponentScore([...opponentScore, opponentTotal]);
+
+		if (yourTotal > opponentTotal) {
+			console.log("You win!")
+		}
+		else if (yourTotal < opponentTotal) {
+			console.log("Opponent wins!")
+		}
+		else {
+			console.log("Tie game!")
+		}
 	};
 
 	// This effectively handles all user input.
@@ -733,8 +749,11 @@ function KoiKoiGame() {
 	
 	// UseEffect might be my least favorite part about React. Will look for better implementations of this.
 	React.useEffect(() => {
-		if (!gameStarted) {
+		if (gameStarted) {
 			startGame();
+		}
+		else if (roundNumber == 12) {
+			endGame();
 		}
 	}, [gameStarted]);
 
@@ -804,9 +823,10 @@ function KoiKoiGame() {
 	// The main render. The first element must be on the same line as return.
 	return React.createElement("div", { className: "koikoigame" },
 			React.createElement("div", null,
-				React.createElement("button", { onClick: () => setRoundStarted(true) }, "Start a round")),
-			React.createElement("div",  null,
-				React.createElement("span", null, "Round " + roundNumber + " / 12")),
+				React.createElement("span", null, "Round " + roundNumber + " / 12"),
+				React.createElement("button", { onClick: () => setGameStarted(true), className: "button", style: { display: !gameStarted ?  "inline-block" : "none" }}, "Start a New Game"),
+				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round")),
+			
 			React.createElement("h2", null, "Opponent's Hand"),
 			React.createElement("div", { id: "opponenthand" }, 
 				opponentHand.map((card) => 
