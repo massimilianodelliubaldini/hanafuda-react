@@ -187,33 +187,42 @@ var shuffleDeck = function(deck) {
 */
 function KoiKoiGame() {
 
+	// Game states.
 	const [gameStarted, setGameStarted]					= React.useState(true);
 	const [gameEnded, setGameEnded]						= React.useState(false);
+
+	// Round states.
 	const [roundStarted, setRoundStarted]				= React.useState(false);
 	const [roundEnded, setRoundEnded]					= React.useState(false);
 	const [roundNumber, setRoundNumber]					= React.useState(0);
-	const [whoseTurn, setWhoseTurn]						= React.useState("");
-	const [dealer, setDealer]							= React.useState("");
+	const [roundWinner, setRoundWinner]					= React.useState("");
+	const [scoreMultiplier, setScoreMultiplier]			= React.useState(0);
 
+	// Turn/Player states.
+	const [turnStarted, setTurnStarted]					= React.useState(false);
+	const [turnEnded, setTurnEnded]						= React.useState(false);
+	const [dealer, setDealer]							= React.useState("");
+	const [whoseTurn, setWhoseTurn]						= React.useState("");
+	const [koiKoiCaller, setKoiKoiCaller]				= React.useState("");
+	const [selectedCard, setSelectedCard]				= React.useState({});
+	const [availableMatches, setAvailableMatches]		= React.useState([]);
+	const [isTopDeck, setIsTopDeck]						= React.useState(false);
+
+	// Opponent states.
 	const [opponentHand, setOpponentHand]				= React.useState([]);
 	const [opponentCollection, setOpponentCollection]	= React.useState([]);
 	const [opponentScore, setOpponentScore]				= React.useState([]);
 	const [opponentSets, setOpponentSets]				= React.useState([]);
 
+	// Non-owned states.
 	const [deck, setDeck]								= React.useState(shuffleDeck([...allCards]));
 	const [board, setBoard]								= React.useState([]);
 
+	// Your states.
 	const [yourCollection, setYourCollection]			= React.useState([]);
 	const [yourHand, setYourHand]						= React.useState([]);
 	const [yourScore, setYourScore]						= React.useState([]);
 	const [yourSets, setYourSets]						= React.useState([]);
-
-	const [selectedCard, setSelectedCard]				= React.useState({});
-	const [availableMatches, setAvailableMatches]		= React.useState([]);
-	const [isTopDeck, setIsTopDeck]						= React.useState(false);
-	const [koiKoi, setKoiKoi]							= React.useState("");
-	const [roundWinner, setRoundWinner]					= React.useState("");
-	const [scoreMultiplier, setScoreMultiplier]			= React.useState(0);
 
 	const startGame = () => {
 		console.log("startGame");
@@ -256,17 +265,36 @@ function KoiKoiGame() {
 
 		// Cards are dealt in this order: 8 to the other player (jp. Ko), 8 to the board, 8 to the dealer.
 		var clone = shuffleDeck([...allCards]);
-		if (dealer == "you") {
-			setOpponentHand(clone.slice(0, 8));
-			setBoard(clone.slice(8, 16));
-			setYourHand(clone.slice(16, 24));
-			setDeck(clone.slice(24, 48));
+		if (roundWinner == "") {
+
+			if (dealer == "you") {
+				setOpponentHand(clone.slice(0, 8));
+				setBoard(clone.slice(8, 16));
+				setYourHand(clone.slice(16, 24));
+				setDeck(clone.slice(24, 48));
+			}
+			else {
+				setYourHand(clone.slice(0, 8));
+				setBoard(clone.slice(8, 16));
+				setOpponentHand(clone.slice(16, 24));
+				setDeck(clone.slice(24, 48));
+			}
 		}
 		else {
-			setYourHand(clone.slice(0, 8));
-			setBoard(clone.slice(8, 16));
-			setOpponentHand(clone.slice(16, 24));
-			setDeck(clone.slice(24, 48));
+
+			setDealer(roundWinner);
+			if (roundWinner == "you") {
+				setOpponentHand(clone.slice(0, 8));
+				setBoard(clone.slice(8, 16));
+				setYourHand(clone.slice(16, 24));
+				setDeck(clone.slice(24, 48));
+			}
+			else {
+				setYourHand(clone.slice(0, 8));
+				setBoard(clone.slice(8, 16));
+				setOpponentHand(clone.slice(16, 24));
+				setDeck(clone.slice(24, 48));
+			}
 		}
 
 		setYourCollection([]);
@@ -277,13 +305,14 @@ function KoiKoiGame() {
 
 		setSelectedCard({});
 		setAvailableMatches([]);	
-		setKoiKoi("");
+		setKoiKoiCaller("");
 		setRoundWinner("");
 		setScoreMultiplier(0);
 
 		setRoundNumber(roundNumber + 1);
 		setWhoseTurn(dealer);
 
+		setTurnStarted(true);
 		setRoundEnded(false);
 	};
 
@@ -320,6 +349,12 @@ function KoiKoiGame() {
 			setRoundEnded(true);
 		}
 	};
+
+	const startTurn = () => {
+		console.log("startTurn");
+
+		setTurnEnded(false);
+	}
 
 	const captureMatchingCards = (firstCard, secondCard) => {
 		console.log("captureMatchingCards");
@@ -365,8 +400,11 @@ function KoiKoiGame() {
 		setSelectedCard({});
 		setAvailableMatches([]);
 
-		setIsTopDeck(!isTopDeck); // See the useEffect for isTopDeck.
+		if (isTopDeck) {
+			setTurnEnded(true);
+		}
 
+		setIsTopDeck(!isTopDeck);
 	};
 
 	const surrenderSelectedCard = (card) => {
@@ -389,7 +427,11 @@ function KoiKoiGame() {
 		setSelectedCard({});
 		setAvailableMatches([]);
 
-		setIsTopDeck(!isTopDeck); // See the useEffect for isTopDeck.
+		if (isTopDeck) {
+			setTurnEnded(true);
+		}
+
+		setIsTopDeck(!isTopDeck);
 	};
 
 	const revealTopDeck = () => {
@@ -427,11 +469,13 @@ function KoiKoiGame() {
 				cardsToContinue = opponentHand.length;
 			}
 
-			if (koiKoi == "" && cardsToContinue > 0) {
+			if (koiKoiCaller == "" && cardsToContinue > 0) {
 				var calledKoiKoi = decideToKoiKoi(whoseTurn); // Do it you coward.
 
 				if (calledKoiKoi) {
-					swapTurns();
+
+					// We just want to end the turn in this case.
+					setTurnStarted(false);
 				}
 				else {
 					setRoundWinner(whoseTurn);
@@ -441,7 +485,7 @@ function KoiKoiGame() {
 				} 
 			}
 			else {
-				if (koiKoi == whoseTurn) {
+				if (koiKoiCaller == whoseTurn) {
 					setRoundWinner(whoseTurn);
 					setScoreMultiplier(1);
 					setRoundStarted(false);
@@ -466,8 +510,8 @@ function KoiKoiGame() {
 			}
 			else {
 
-				// Normal turn ending. MOVE THIS SO IT DOESNT MESS UP TURN ORDER.
-				swapTurns(); 
+				// We just want to end the turn in this case.
+				setTurnStarted(false);
 			}
 		}
 	};
@@ -478,7 +522,7 @@ function KoiKoiGame() {
 		if (caller == "you") {
 			if (confirm("Do you want to Koi Koi?")) {
 
-				setKoiKoi("you");
+				setKoiKoiCaller("you");
 				return true;
 			}
 			else {
@@ -488,7 +532,7 @@ function KoiKoiGame() {
 		else {
 			if (opponentHand.length > 3) {
 
-				setKoiKoi("opponent");
+				setKoiKoiCaller("opponent");
 				return true;
 			}
 			else {
@@ -497,10 +541,19 @@ function KoiKoiGame() {
 		}
 	};
 
-	const swapTurns = () => {
-		console.log("swapTurns");
+	const swapWhoseTurn = () => {
+		console.log("swapWhoseTurn");
 
 		setWhoseTurn(whoseTurn == "you" ? "opponent" : "you");
+	};
+
+	const endTurn = () => {
+		console.log("endTurn");
+
+		if (roundWinner == "") {
+			swapWhoseTurn();
+			setTurnEnded(false);
+		}
 	};
 
 	const endRound = () => {
@@ -520,7 +573,6 @@ function KoiKoiGame() {
 
 			setYourScore([...yourScore, newScore]);
 			setOpponentScore([...opponentScore, 0]);
-			setDealer("you");
 		}
 		else if (roundWinner == "opponent") {
 			opponentSets.forEach(s => newScore += s.calculatePoints(opponentCollection));
@@ -529,7 +581,6 @@ function KoiKoiGame() {
 
 			setOpponentScore([...opponentScore, newScore]);
 			setYourScore([...yourScore, 0]);
-			setDealer("opponent");
 		}
 		else {
 
@@ -553,7 +604,7 @@ function KoiKoiGame() {
 	const endGame = () => {
 		console.log("endGame");
 
-
+		setGameStarted(false);
 	};
 
 	// This effectively handles all user input.
@@ -691,15 +742,14 @@ function KoiKoiGame() {
 		}
 	}, [roundStarted]);
 
-	/*
-		Conceptually, there are two major events in every turn: you play from your hand, and you play the top card of the deck.
-		After you play from your hand, regardless of its outcome, you must play the top card of the deck.
-		After you play from the deck, regardless of its outcome, we check from completed sets, and then the turn ends.
-
-		Altering isTopDeck allows us to trigger the next phase of the turn.
-	*/
 	React.useEffect(() => {
-		if (roundStarted) {	
+		if (turnStarted) {
+			startTurn();
+		}
+	}, [turnStarted]);
+
+	React.useEffect(() => {
+		if (turnStarted) {	
 			if (isTopDeck) {
 				revealTopDeck();
 			}
@@ -710,12 +760,21 @@ function KoiKoiGame() {
 	}, [isTopDeck]);
 
 	React.useEffect(() => {
-		if (roundStarted) {
+		if (turnStarted && !turnEnded) {
 			if (whoseTurn == "opponent") {
 				handleOpponent();
 			}
 		}
-	}, [roundStarted, whoseTurn, isTopDeck]);
+	}, [turnStarted, isTopDeck]);
+
+	React.useEffect(() => {
+		if (turnEnded) {
+			endTurn();
+		}
+		else if (roundStarted) {
+			setTurnStarted(true);
+		}
+	}, [turnEnded]);
 
 	React.useEffect(() => {
 		if (roundEnded) {
@@ -744,7 +803,7 @@ function KoiKoiGame() {
 			React.createElement("div", { id: "deck" }, 
 				React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }),
 				React.createElement("div", { className: "hanafudacard", style: { margin: 2, height: 150, width: 92, display: isTopDeck ? "inline-block" : "none" }}, 
-						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+						React.createElement("button", { onClick: () => handleClick(deck[0]), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
 							React.createElement("img", { src: deck[0].image })))),
 
 			React.createElement("h2", null, "The Board"),
@@ -785,30 +844,39 @@ function KoiKoiGame() {
 				var d = document.getElementById("debug");
 				d.style.display = d.style.display == "none" ? "block" : "none";
 			}}, "Toggle Debug Mode"),
-			React.createElement("div", { id: "debug", style: { display: "none" }},
+			React.createElement("div", { id: "debug", style: { display: "block" }},
 				React.createElement("h2", null, "Debug Mode"),
+				React.createElement("h3", null, "Game States"),
 				React.createElement("div", null, "gameStarted: " 		+ gameStarted.toString()),
 				React.createElement("div", null, "gameEnded: " 			+ gameEnded.toString()),
+				React.createElement("h3", null, "Round States"),
 				React.createElement("div", null, "roundStarted: " 		+ roundStarted.toString()),
 				React.createElement("div", null, "roundEnded: " 		+ roundEnded.toString()),
 				React.createElement("div", null, "roundNumber: " 		+ roundNumber),
-				React.createElement("div", null, "whoseTurn: " 			+ whoseTurn),
+				React.createElement("div", null, "roundWinner: "		+ roundWinner),
+				React.createElement("div", null, "scoreMultiplier: "	+ scoreMultiplier),
+				React.createElement("h3", null, "Turn/Player States"),
+				React.createElement("div", null, "turnStarted: " 		+ turnStarted.toString()),
+				React.createElement("div", null, "turnEnded: " 			+ turnEnded.toString()),
 				React.createElement("div", null, "dealer: " 			+ dealer),
+				React.createElement("div", null, "whoseTurn: " 			+ whoseTurn),
+				React.createElement("div", null, "koiKoiCaller: " 		+ koiKoiCaller),
+				React.createElement("div", null, "selectedCard: " 		+ selectedCard.month + " " + selectedCard.name),
+				React.createElement("div", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
+				React.createElement("div", null, "isTopDeck: " 			+ isTopDeck.toString()),
+				React.createElement("h3", null, "Opponent States"),
 				React.createElement("div", null, "opponentHand: " 		+ opponentHand.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "opponentCollection: " + opponentCollection.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "opponentScore: " 		+ opponentScore.map(s => " " + s)),
 				React.createElement("div", null, "opponentSets: " 		+ opponentSets.map(s => " " + s.name)),
+				React.createElement("h3", null, "Non-owned States"),
 				React.createElement("div", null, "deck: " 				+ deck.length + " cards remaining"),
 				React.createElement("div", null, "board: " 				+ board.map(s => " " + s.month + " " + s.name)),
+				React.createElement("h3", null, "Your States"),
 				React.createElement("div", null, "yourCollection: " 	+ yourCollection.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "yourHand: " 			+ yourHand.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "yourScore: " 			+ yourScore.map(s => " " + s)),
 				React.createElement("div", null, "yourSets: " 			+ yourSets.map(s => " " + s.name)),
-				React.createElement("div", null, "selectedCard: " 		+ selectedCard.month + " " + selectedCard.name),
-				React.createElement("div", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
-				React.createElement("div", null, "isTopDeck: " 			+ isTopDeck.toString()),
-				React.createElement("div", null, "koiKoi: " 			+ koiKoi),
-				React.createElement("div", null, "roundWinner: "		+ roundWinner),
-				React.createElement("div", null, "scoreMultiplier: "	+ scoreMultiplier)),
+				),
 	);
 }
