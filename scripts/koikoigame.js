@@ -77,20 +77,20 @@ const allCards = [
 */
 const allSets = [
 
-	/* jp. Gokoh */ 					{ id: "5L",		key: "5L",		name: "Five Lights",					calculatePoints: (collection) => { return 15;	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 5); }},
-	/* jp. Shikoh */ 					{ id: "4L",		key: "4L",		name: "Four Lights",					calculatePoints: (collection) => { return 8; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) && !containsCard(collection, "11-L") }},
-	/* jp. Ame-Shikoh */ 				{ id: "4LR",	key: "4LR",		name: "Four Lights with Rain",			calculatePoints: (collection) => { return 7; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) &&  containsCard(collection, "11-L") }},
-	/* jp. Sankoh */ 					{ id: "3L",		key: "3L",		name: "Three Lights",					calculatePoints: (collection) => { return 6; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 3) && !containsCard(collection, "11-L") }},
-	/* jp. Tsukimi-Zake */ 				{ id: "MV",		key: "MV",		name: "Moon Viewing",					calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "8-L") }},
-	/* jp. Hanami-Zake */ 				{ id: "CBV",	key: "CBV",		name: "Cherry Blossom Viewing",			calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "3-L") }},
-	/* jp. Inoshikachoh */ 				{ id: "BDB",	key: "BDB",		name: "Boar Deer Butterflies",			calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "7-S") && containsCard(collection, "10-S") && containsCard(collection, "6-S") }},
-	/* jp. Akatan Aotan no Choufuku */ 	{ id: "AAC",	key: "AAC",		name: "Red and Blue Poetry Slips",		calculatePoints: (collection) => { return 10; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3) && containsAtLeast(collection, (card) => card.isBlue, 3); }},
-	/* jp. Akatan */ 					{ id: "RP",		key: "RP",		name: "Red Poetry Slips",				calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3);		}},
-	/* jp. Aotan */ 					{ id: "BP",		key: "BP",		name: "Blue Poetry Slips",				calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isBlue,	3);		}},
-	/* jp. Tsukifuda */ //				{ id: "M",		key: "M",		name: "Month",							calculatePoints: (collection) => { return 4;	},														meetsRequirement: (collection) => { return containsFourOfAKind(collection)								}},
-	/* jp. Tanzaku */ 					{ id: "P",		key: "P",		name: "Slips",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSlip)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSlip,	5);		}},
-	/* jp. Tane */ 						{ id: "S",		key: "S",		name: "Seeds",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isSeed)		- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSeed,	5);		}},
-	/* jp. Kasu */ 						{ id: "C",		key: "C",		name: "Chaff",							calculatePoints: (collection) => { return countCards(collection, (card) => card.isChaff)	- 9;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isChaff,	10);	}},
+	/* jp. Gokoh */ 					{ id: "5L",		key: "5L",		name: "Five Lights",					storedPoints: 0, calculatePoints: (collection) => { return 15;	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 5); }},
+	/* jp. Shikoh */ 					{ id: "4L",		key: "4L",		name: "Four Lights",					storedPoints: 0, calculatePoints: (collection) => { return 8; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) && !containsCard(collection, "11-L") }},
+	/* jp. Ame-Shikoh */ 				{ id: "4LR",	key: "4LR",		name: "Four Lights with Rain",			storedPoints: 0, calculatePoints: (collection) => { return 7; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) &&  containsCard(collection, "11-L") }},
+	/* jp. Sankoh */ 					{ id: "3L",		key: "3L",		name: "Three Lights",					storedPoints: 0, calculatePoints: (collection) => { return 6; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 3) && !containsCard(collection, "11-L") }},
+	/* jp. Tsukimi-Zake */ 				{ id: "MV",		key: "MV",		name: "Moon Viewing",					storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "8-L") }},
+	/* jp. Hanami-Zake */ 				{ id: "CBV",	key: "CBV",		name: "Cherry Blossom Viewing",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "3-L") }},
+	/* jp. Inoshikachoh */ 				{ id: "BDB",	key: "BDB",		name: "Boar Deer Butterflies",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "7-S") && containsCard(collection, "10-S") && containsCard(collection, "6-S") }},
+	/* jp. Akatan Aotan no Choufuku */ 	{ id: "AAC",	key: "AAC",		name: "Red and Blue Poetry Slips",		storedPoints: 0, calculatePoints: (collection) => { return 10; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3) && containsAtLeast(collection, (card) => card.isBlue, 3); }},
+	/* jp. Akatan */ 					{ id: "RP",		key: "RP",		name: "Red Poetry Slips",				storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3);		}},
+	/* jp. Aotan */ 					{ id: "BP",		key: "BP",		name: "Blue Poetry Slips",				storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isBlue,	3);		}},
+	/* jp. Tsukifuda */ //				{ id: "M",		key: "M",		name: "Month",							storedPoints: 0, calculatePoints: (collection) => { return 4;	},														meetsRequirement: (collection) => { return containsFourOfAKind(collection)								}},
+	/* jp. Tanzaku */ 					{ id: "P",		key: "P",		name: "Slips",							storedPoints: 0, calculatePoints: (collection) => { return countCards(collection, (card) => card.isSlip)	- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSlip,	5);		}},
+	/* jp. Tane */ 						{ id: "S",		key: "S",		name: "Seeds",							storedPoints: 0, calculatePoints: (collection) => { return countCards(collection, (card) => card.isSeed)	- 4;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isSeed,	5);		}},
+	/* jp. Kasu */ 						{ id: "C",		key: "C",		name: "Chaff",							storedPoints: 0, calculatePoints: (collection) => { return countCards(collection, (card) => card.isChaff)	- 9;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isChaff,	10);	}},
 ];
 
 /*
@@ -102,8 +102,8 @@ const allSets = [
 */
 const preRoundSets = [
 
-	/* jp. Teshi */ 	{ id: "T",	key: "T",	name: "Four of a Kind",	calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourOfAKind(collection); }},
-	/* jp. Kuttsuki */ 	{ id: "K",	key: "K",	name: "Four Pairs",		calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourPairs(collection); }},
+	/* jp. Teshi */ 	{ id: "T",	key: "T",	name: "Four of a Kind",	storedPoints: 0, calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourOfAKind(collection); }},
+	/* jp. Kuttsuki */ 	{ id: "K",	key: "K",	name: "Four Pairs",		storedPoints: 0, calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourPairs(collection); }},
 ];
 
 /*
@@ -193,6 +193,7 @@ function KoiKoiGame() {
 
 	// Game states.
 	const [gameStarted, setGameStarted]					= React.useState(false);
+	const [userMessage, setUserMessage]					= React.useState("");
 
 	// Round states.
 	const [roundStarted, setRoundStarted]				= React.useState(false);
@@ -204,11 +205,12 @@ function KoiKoiGame() {
 	// Turn/Player states.
 	const [turnStarted, setTurnStarted]					= React.useState(false);
 	const [whoseTurn, setWhoseTurn]						= React.useState("");
-	const [koiKoiCaller, setKoiKoiCaller]				= React.useState("");
 	const [selectedCard, setSelectedCard]				= React.useState({});
 	const [availableMatches, setAvailableMatches]		= React.useState([]);
 	const [playFromHand, setPlayFromHand]				= React.useState(false);
 	const [playFromDeck, setPlayFromDeck]				= React.useState(false);
+	const [promptKoiKoi, setPromptKoiKoi]				= React.useState(false);
+	const [koiKoiCaller, setKoiKoiCaller]				= React.useState("");
 
 	// Opponent states.
 	const [opponentHand, setOpponentHand]				= React.useState([]);
@@ -226,6 +228,20 @@ function KoiKoiGame() {
 	const [yourScore, setYourScore]						= React.useState([]);
 	const [yourSets, setYourSets]						= React.useState([]);
 
+	const replaceUserMessage = (newMessage) => {
+		console.log("replaceUserMessage " + newMessage);
+
+		setUserMessage(newMessage);
+	};
+
+	const appendUserMessage = (newMessage) => {
+		console.log("appendUserMessage " + newMessage);
+
+		if (userMessage.indexOf(newMessage) < 0) {
+			setUserMessage(userMessage + " " + newMessage);
+		}
+	};
+
 	const startGame = () => {
 		console.log("startGame");
 
@@ -237,28 +253,35 @@ function KoiKoiGame() {
 		*/
 		var yourCard = deck[0];
 		var opponentCard = deck[1];
+		var um = "";
 
 		setYourHand([yourCard]);
 		setOpponentHand([opponentCard]);
 
 		if (allMonths.indexOf(yourCard.month) < allMonths.indexOf(opponentCard.month)) {
 			setDealer("you");
+			um = "Your card belongs to " + yourCard.month + " which is earlier than opponent's " + opponentCard.month + ". You will be the first dealer. ";
 		}
 		else if (allMonths.indexOf(yourCard.month) > allMonths.indexOf(opponentCard.month)) {
 			setDealer("opponent");
+			um = "Your card belongs to " + yourCard.month + " which is later than opponent's " + opponentCard.month + ". Opponent will be the first dealer. ";
 		}
 		else {
 			if (yourCard.points > opponentCard.points) {
 				setDealer("you");
+				um = "Both cards belong to " + yourCard.month + ", but your card has a higher point value. You will be the first dealer. ";
 			}
 			else if (yourCard.points < opponentCard.points) {
 				setDealer("opponent");
+				um = "Both cards belong to " + yourCard.month + ", but opponent's card has a higher point value. Opponent will be the first dealer. ";
 			}
 			else {
 				setDealer("you"); // Just fail safe and give it to the human.
+				um = "Both cards are identical months and values, so the human will go first. ";
 			}
 		}
 
+		replaceUserMessage(um);
 		setGameStarted(true);
 	};
 
@@ -311,11 +334,14 @@ function KoiKoiGame() {
 		setAvailableMatches([]);	
 		setKoiKoiCaller("");
 
+		replaceUserMessage("");
 		setRoundNumber(roundNumber + 1);	
 	};
 
 	const checkForPreRoundSets = (yourEight, boardsEight, opponentsEight) => {
 		console.log("checkForPreRoundSets");
+
+		var endEarly = false;
 
 		// Check the board first.
 		var boardPreSets = [...preRoundSets].filter(s => s.meetsRequirement(boardsEight));
@@ -323,7 +349,7 @@ function KoiKoiGame() {
 
 			setRoundWinner("stalemate");
 			setScoreMultiplier(0);
-			return true;
+			endEarly = true;
 		}
 
 		var yourPreSets = [...preRoundSets].filter(s => s.meetsRequirement(yourEight));
@@ -332,7 +358,7 @@ function KoiKoiGame() {
 			setYourSets([...yourPreSets]);
 			setRoundWinner("you");
 			setScoreMultiplier(1);
-			return true;
+			endEarly = true;
 		}
 
 		var opponentPreSets = [...preRoundSets].filter(s => s.meetsRequirement(opponentsEight));
@@ -341,10 +367,10 @@ function KoiKoiGame() {
 			setOpponentSets([...opponentPreSets]);
 			setRoundWinner("opponent");
 			setScoreMultiplier(1);
-			return true;
+			endEarly = true;
 		}
 
-		return false; 
+		return endEarly; 
 	};
 
 	const startTurn = () => {
@@ -352,49 +378,96 @@ function KoiKoiGame() {
 
 		setPlayFromHand(true);
 		setPlayFromDeck(true);
+		setPromptKoiKoi(false);
+
+		if (whoseTurn == "you") {
+			appendUserMessage("It is your turn. ");
+		}
+		else {
+			replaceUserMessage("It is opponent's turn. ");
+		}
 	}
 
 	const captureMatchingCards = (firstCard, secondCard) => {
 		console.log("captureMatchingCards");
 
-		// If 3 cards of the same suit are on the board and you capture with the fourth, you capture them all.
-		if (availableMatches.length == 3) {
-
-			var remainingCards = availableMatches.filter(c => c.id !== secondCard.id);
-
-			if (whoseTurn == "you") {
-				setYourCollection([...yourCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
-			}
-			else {
-				setOpponentCollection([...opponentCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
-			}
-
-			setBoard(board.filter(c => c.id !== secondCard.id && c.id !== remainingCards[0].id && c.id !== remainingCards[1].id));
+		/*
+			When the opponent plays from hand, they don't need to click to select cards in hand. If they never click, 
+			we never populate availableMatches, so the opponent would not able to capture the remaining cards 
+			of a whole-month sweep. To prevent this, we should always ensure we have all the matches. 
+		*/
+		var matches = []; 
+		if (availableMatches.length > 0) {
+			matches = availableMatches;
 		}
 		else {
-
-			if (whoseTurn == "you") {
-				setYourCollection([...yourCollection, firstCard, secondCard]);
-			}
-			else {
-				setOpponentCollection([...opponentCollection, firstCard, secondCard]);
-			}
-
-			setBoard(board.filter(c => c.id !== secondCard.id));
+			matches = board.filter(c => c.month == firstCard.month);
 		}
 
-		
 		if (playFromHand) {
-			if (whoseTurn == "you") {
-				setYourHand(yourHand.filter(c => c.id !== firstCard.id));
+
+			// If 3 cards of the same suit are on the board and you capture with the fourth, you capture them all.
+			if (matches.length == 3) {
+
+				var remainingCards = matches.filter(c => c.id !== secondCard.id);
+				if (whoseTurn == "you") {
+					setYourCollection([...yourCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+					setYourHand(yourHand.filter(c => c.id !== firstCard.id));
+					replaceUserMessage("You captured all of " + secondCard.month + " with " + firstCard.name + ". ");
+				}
+				else {
+					setOpponentCollection([...opponentCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+					setOpponentHand(opponentHand.filter(c => c.id !== firstCard.id));
+					replaceUserMessage("Opponent captured all of " + secondCard.month + " with " + firstCard.name + ". ");
+				}
+
+				setBoard(board.filter(c => c.id !== secondCard.id && c.id !== remainingCards[0].id && c.id !== remainingCards[1].id));
 			}
 			else {
-				setOpponentHand(opponentHand.filter(c => c.id !== firstCard.id));
+				if (whoseTurn == "you") {
+					setYourCollection([...yourCollection, firstCard, secondCard]);
+					setYourHand(yourHand.filter(c => c.id !== firstCard.id));
+					replaceUserMessage("You captured " + secondCard.name + " with " + firstCard.name + ". ");
+				}
+				else {
+					setOpponentCollection([...opponentCollection, firstCard, secondCard]);
+					setOpponentHand(opponentHand.filter(c => c.id !== firstCard.id));
+					replaceUserMessage("Opponent captured " + secondCard.name + " with " + firstCard.name + ". ");
+				}
+
+				setBoard(board.filter(c => c.id !== secondCard.id));
 			}
 
 			setPlayFromHand(false);	
 		}
 		else if (playFromDeck) {
+			if (matches.length == 3) {
+
+				var remainingCards = matches.filter(c => c.id !== secondCard.id);
+				if (whoseTurn == "you") {
+					setYourCollection([...yourCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+					appendUserMessage("You captured all of " + secondCard.month + " with " + firstCard.name + ". ");
+				}
+				else {
+					setOpponentCollection([...opponentCollection, firstCard, secondCard, remainingCards[0], remainingCards[1]]);
+					appendUserMessage("Opponent captured all of " + secondCard.month + " with " + firstCard.name + ". ");
+				}
+
+				setBoard(board.filter(c => c.id !== secondCard.id && c.id !== remainingCards[0].id && c.id !== remainingCards[1].id));
+			}
+			else {
+				if (whoseTurn == "you") {
+					setYourCollection([...yourCollection, firstCard, secondCard]);
+					appendUserMessage("You captured " + secondCard.name + " with " + firstCard.name + ". ");
+				}
+				else {
+					setOpponentCollection([...opponentCollection, firstCard, secondCard]);
+					appendUserMessage("Opponent captured " + secondCard.name + " with " + firstCard.name + ". ");
+				}
+
+				setBoard(board.filter(c => c.id !== secondCard.id));
+			}
+
 			setDeck(deck.filter(c => c.id !== firstCard.id));
 			setPlayFromDeck(false);	
 		}
@@ -408,18 +481,26 @@ function KoiKoiGame() {
 
 		setBoard([...board, card]);
 
-		
 		if (playFromHand) {
 			if (whoseTurn == "you") {
 				setYourHand(yourHand.filter(c => c.id !== card.id));
+				replaceUserMessage("You surrendered " + card.name + ". ");
 			}
 			else {
 				setOpponentHand(opponentHand.filter(c => c.id !== card.id));
+				replaceUserMessage("Opponent surrendered " + card.name + ". ");
 			}
 
 			setPlayFromHand(false);	
 		}
 		else if (playFromDeck) {
+			if (whoseTurn == "you") {
+				appendUserMessage("You surrendered " + card.name + ". ");
+			}
+			else {
+				appendUserMessage("Opponent surrendered " + card.name + ". ");
+			}
+
 			setDeck(deck.filter(c => c.id !== card.id));
 			setPlayFromDeck(false);	
 		}
@@ -438,38 +519,71 @@ function KoiKoiGame() {
 	const checkForCompletedSets = () => {
 		console.log("checkForCompletedSets");
 
-		// We want to find sets you haven't already completed, except for those that calculate their points.
-		var completedSets = [];
+		var um = "";
+
+		/*
+			It is a crime that structuredClone cannot clone methods. I need a deep clone 
+			so that allSets[i].storedPoints isn't altered, but this is the best I can do.
+		*/
+		var completedSets = JSON.parse(JSON.stringify(allSets));
+		completedSets.forEach(s => s.meetsRequirement = allSets.find(a => a.id == s.id)?.meetsRequirement);
+		completedSets.forEach(s => s.calculatePoints = allSets.find(a => a.id == s.id)?.calculatePoints);
+
+		/*
+			We want to find sets you haven't already completed, except for those that calculate their points,
+			but only if you've captured more of their respective category after you call Koi Koi.
+		*/
 		if (whoseTurn == "you") {
-			completedSets = [...allSets]
-				.filter(s => s.meetsRequirement(yourCollection))
-				.filter(s => !yourSets.map(y => y.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
+			completedSets = completedSets.filter(s => s.meetsRequirement(yourCollection));
+			completedSets.forEach(s => s.storedPoints = s.calculatePoints(yourCollection));
+			completedSets = completedSets.filter(s => s.storedPoints > (yourSets.find(y => y.id == s.id)?.storedPoints || 0));
+
+			//!yourSets.map(y => y.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
 		}
 		else {
-			completedSets = [...allSets]
-				.filter(s => s.meetsRequirement(opponentCollection))
-				.filter(s => !opponentSets.map(o => o.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
+			completedSets = completedSets.filter(s => s.meetsRequirement(opponentCollection));
+			completedSets.forEach(s => s.storedPoints = s.calculatePoints(opponentCollection));
+			completedSets = completedSets.filter(s => s.storedPoints > (opponentSets.find(o => o.id == s.id)?.storedPoints || 0));
+
+			//!opponentSets.map(o => o.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
 		}
 		
 		if (completedSets.length > 0) {
 
+			// Helper function to ensure uniqueness and maximum value of every completed set.
+			var reduceSets = function(sets) {
+				var reducedSet = sets.reduce((newSets, set) => {
+					
+					var foundItem = newSets.find(i => i.id == set.id);
+					if (foundItem) {
+						foundItem.storedPoints = Math.max(set.storedPoints, foundItem.storedPoints); // Shortcut, these objects are mostly the same anyway.
+					}
+					else {
+						newSets.push(set);
+					}
+
+                    return newSets;
+				}, []);
+
+				return reducedSet;
+			};
+
 			var cardsToContinue = 0;
 			if (whoseTurn == "you") {
-				setYourSets([...yourSets, ...completedSets]);
+				setYourSets(reduceSets([...yourSets, ...completedSets]));
 				cardsToContinue = yourHand.length;
+				um = "You have completed the following sets: " + completedSets.map(s => " " + s.name) + ". ";
 			}
 			else {
-				setOpponentSets([...opponentSets, ...completedSets]);
+				setOpponentSets(reduceSets([...opponentSets, ...completedSets]));
 				cardsToContinue = opponentHand.length;
+				um = "Opponent has completed the following sets: " + completedSets.map(s => " " + s.name) + ". ";
 			}
 
 			if (koiKoiCaller == "" && cardsToContinue > 0) {
-				var calledKoiKoi = decideToKoiKoi(whoseTurn); // Do it you coward.
 
-				if (!calledKoiKoi) {
-					setRoundWinner(whoseTurn);
-					setScoreMultiplier(1);
-				} 
+				// The turn does not end until a decision to Koi Koi is made.
+				setPromptKoiKoi(true);
 			}
 			else {
 				if (koiKoiCaller == whoseTurn) {
@@ -480,6 +594,8 @@ function KoiKoiGame() {
 					setRoundWinner(whoseTurn);
 					setScoreMultiplier(2);
 				}
+
+				setTurnStarted(false);
 			}
 		}
 		else {
@@ -489,36 +605,38 @@ function KoiKoiGame() {
 				setRoundWinner("stalemate");
 				setScoreMultiplier(0);
 			}
+
+			setTurnStarted(false);
 		}
 
-		setTurnStarted(false);
+		appendUserMessage(um);
 	};
 
-	const decideToKoiKoi = (caller) => {
+	const decideToKoiKoi = (caller, answer) => {
 		console.log("decideToKoiKoi");
 
 		if (caller == "you") {
-
-			// A Fix For FireFox. See https://github.com/facebook/react/issues/17355.
-			var yes = setTimeout(() => confirm("Do you want to Koi Koi?"), 0)
-			if (yes) {
+			if (answer) {
 				setKoiKoiCaller("you");
-				return true;
+				appendUserMessage("'Koi Koi!'");
 			}
 			else {
-				return false;
+				setRoundWinner(caller);
+				setScoreMultiplier(1);
 			}
 		}
 		else {
-			if (opponentHand.length > 3) {
-
+			if (answer) {
 				setKoiKoiCaller("opponent");
-				return true;
+				appendUserMessage("'Koi Koi!'");
 			}
 			else {
-				return false;
+				setRoundWinner(caller);
+				setScoreMultiplier(1);
 			}
 		}
+
+		setTurnStarted(false);
 	};
 
 	const swapWhoseTurn = () => {
@@ -541,13 +659,15 @@ function KoiKoiGame() {
 	const endRound = () => {
 		console.log("endRound");
 
+		var newScore = 0;
+		var um = "";
+
 		/*
 			There are two opportunities for score multipliers.
 			If you win the round after your opponent called Koi Koi, you double your score. (This is parameterized.)
 			If you complete sets totalling 7 points or more, you double your score. (This is calculated here.)
 			These effects can stack leading to a quadruple multiplier.
 		*/
-		var newScore = 0;
 		if (roundWinner == "you") {
 			yourSets.forEach(s => newScore += s.calculatePoints(yourCollection));
 
@@ -555,6 +675,7 @@ function KoiKoiGame() {
 
 			setYourScore([...yourScore, newScore]);
 			setOpponentScore([...opponentScore, 0]);
+			um = "You won the round with " + newScore + (newScore == 1 ? " point. " : " points. ");
 		}
 		else if (roundWinner == "opponent") {
 			opponentSets.forEach(s => newScore += s.calculatePoints(opponentCollection));
@@ -563,6 +684,7 @@ function KoiKoiGame() {
 
 			setYourScore([...yourScore, 0]);
 			setOpponentScore([...opponentScore, newScore]);
+			um = "Opponent won the round with " + newScore + (newScore == 1 ? " point. " : " points. ");
 		}
 		else {
 
@@ -573,8 +695,12 @@ function KoiKoiGame() {
 			*/
 			setYourScore([...yourScore, 0]);
 			setOpponentScore([...opponentScore, 0]);
+			um = "The round ended in a stalemate. ";
 		}
 
+		appendUserMessage(um);
+
+		// A traditional game of Koi Koi lasts 12 rounds, one for each month in the year. 
 		if (roundNumber == 12) {
 			setGameStarted(false);
 		}
@@ -594,13 +720,13 @@ function KoiKoiGame() {
 		setOpponentScore([...opponentScore, "Total ", opponentTotal]);
 
 		if (yourTotal > opponentTotal) {
-			console.log("You win!")
+			appendUserMessage("You win the game!")
 		}
 		else if (yourTotal < opponentTotal) {
-			console.log("Opponent wins!")
+			appendUserMessage("Opponent wins the game!")
 		}
 		else {
-			console.log("Tie game!")
+			appendUserMessage("It's a tie game!")
 		}
 	};
 
@@ -610,22 +736,22 @@ function KoiKoiGame() {
 
 		// Safety checks.
 		if (!gameStarted ) {
-			console.log("The game has not started.");
+			appendUserMessage("The game has not started.");
 			return;
 		}
 
 		if (!roundStarted) {
-			console.log("The round has not started.");
+			appendUserMessage("The next round has not started.");
 			return;
 		}
 
 		if (!turnStarted) {
-			console.log("The turn has not started.");
+			appendUserMessage("The next turn has not started.");
 			return;
 		}
 
 		if (whoseTurn !== "you") {
-			console.log("It is not your turn.");
+			appendUserMessage("It is not your turn.");
 			return;
 		}
 
@@ -646,14 +772,18 @@ function KoiKoiGame() {
 					}
 					else {
 
-						console.log("You cannot surrender a card with matches.");
+						appendUserMessage("You cannot surrender a card with matches.");
 					}
 				}
 				else {
 
 					// Selected a new card.
+					var matches = board.filter(c => c.month == card.month);
+					var um = "You selected " + card.name + ". It has " + matches.length + (matches.length == 1 ? " match. " : " matches. ");
+
 					setSelectedCard(card);
-					setAvailableMatches(board.filter(c => c.month == card.month));
+					setAvailableMatches(matches);
+					replaceUserMessage(um);
 				}	
 			}
 			else {
@@ -661,7 +791,7 @@ function KoiKoiGame() {
 				// Is there already a selected card?
 				if (selectedCard.id == null) {
 
-					console.log("You have not selected a card yet.");
+					appendUserMessage("You have not selected a card yet.");
 				}
 				else {
 
@@ -673,7 +803,7 @@ function KoiKoiGame() {
 					}
 					else {
 
-						console.log("You cannot capture cards that don't match.");
+						appendUserMessage("You cannot capture cards that don't match.");
 					}
 				}
 			}
@@ -683,7 +813,7 @@ function KoiKoiGame() {
 			// Is the card you clicked in your hand or on the board?
 			if (containsCard(yourHand, card.id)) {
 
-				console.log("You cannot select cards when playing from the deck.");
+				appendUserMessage("You cannot select cards when playing from the deck.");
 			}
 			else if (containsCard(board, card.id)) {
 
@@ -695,7 +825,7 @@ function KoiKoiGame() {
 				}
 				else {
 
-					console.log("You cannot capture cards that don't match.");
+					appendUserMessage("You cannot capture cards that don't match.");
 				}
 			}
 			else {
@@ -708,9 +838,14 @@ function KoiKoiGame() {
 				}
 				else {
 
-					console.log("You cannot surrender a card with matches.");
+					appendUserMessage("You cannot surrender a card with matches.");
 				}
 			}
+		}
+		else if (promptKoiKoi) {
+
+			// You have been presented with the Koi Koi prompt.
+			appendUserMessage("You must choose whether or not to call Koi Koi.");
 		}
 	};
 
@@ -746,6 +881,14 @@ function KoiKoiGame() {
 			} 
 			else {
 				surrenderSelectedCard(card);
+			}
+		}
+		else if (promptKoiKoi) {
+			if (opponentHand.length > 3) {
+				decideToKoiKoi("opponent", true);
+			}
+			else {
+				decideToKoiKoi("opponent", true);
 			}
 		}
 	};
@@ -791,31 +934,38 @@ function KoiKoiGame() {
 	React.useEffect(() => {
 		if (gameStarted && roundStarted && turnStarted) {	
 
-			if (!playFromHand && !playFromDeck) {
+			if (!playFromHand && !playFromDeck && !promptKoiKoi) {
 				checkForCompletedSets();
 			}
-			else if (!playFromHand && playFromDeck) {
+			else if (!playFromHand && playFromDeck && !promptKoiKoi) {
 				revealTopDeck();
+			}
+			else if (!playFromHand && !playFromDeck && promptKoiKoi) {
+				console.log("should prompt for koikoi")
 			}
 		}
 		else {
 			setPlayFromHand(false);
 			setPlayFromDeck(false);
+			setPromptKoiKoi(false);
 		}
-	}, [playFromHand, playFromDeck]);
+	}, [playFromHand, playFromDeck, promptKoiKoi]);
 
 	React.useEffect(() => {
 		if (gameStarted && roundStarted && turnStarted) {
 			if (whoseTurn == "opponent") {
-				if (!playFromHand && playFromDeck) {
+				if (playFromHand && playFromDeck && !promptKoiKoi) {
 					handleOpponent();
 				}
-				else if (playFromHand && playFromDeck) {
+				else if (!playFromHand && playFromDeck && !promptKoiKoi) {
+					handleOpponent();
+				}
+				else if (!playFromHand && !playFromDeck && promptKoiKoi) {
 					handleOpponent();
 				}
 			}
 		}
-	}, [playFromHand, playFromDeck]);
+	}, [playFromHand, playFromDeck, promptKoiKoi]);
 
 	React.useEffect(() => {
 		if (gameStarted && roundStarted && !turnStarted) {	
@@ -827,9 +977,26 @@ function KoiKoiGame() {
 	return React.createElement("div", { className: "koikoigame" },
 			React.createElement("div", { className: "gamearea info", id: "info" },
 				React.createElement("span", { className: "information" }, "Round " + roundNumber + " / 12"),
-				React.createElement("button", { onClick: () => setGameStarted(true), className: "button information", style: { display: !gameStarted ?  "inline-block" : "none" }}, "Start a New Game"),
-				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round")),
+				React.createElement("button", { onClick: () => setGameStarted(true), className: "button information", style: { display: !gameStarted ? "inline-block" : "none" }}, "Start a New Game"),
+				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round"),
+				React.createElement("button", { onClick: () => decideToKoiKoi("you", true), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "'Koi Koi!'"),
+				React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ?  "inline-block" : "none" }}, "Finish Round"),
+				React.createElement("i", { className: "information" }, userMessage)),
 			
+			React.createElement("div", { className: "gamearea info", id: "scores" },
+				React.createElement("h3", null, "Scores"),
+				React.createElement("div", null, 
+					React.createElement("table", null,
+						React.createElement("tbody", null,
+							React.createElement("tr", null,
+								React.createElement("td", { className: "information" }, "You"),
+								yourScore.map((score) => 
+									React.createElement("td", { className: "information" }, score))),
+							React.createElement("tr", null,
+								React.createElement("td", { className: "information" }, "Opponent"),
+								opponentScore.map((score) => 
+									React.createElement("td", { className: "information" }, score))))))),
+
 			React.createElement("div", { className: "gamearea", id: "opponenthand" },
 				React.createElement("h3", null, "Opponent's Hand"),
 				React.createElement("div", null, 
@@ -846,7 +1013,7 @@ function KoiKoiGame() {
 							React.createElement("img", { src: card.image }))))),
 
 			React.createElement("div", null,
-				React.createElement("div", { className: "gamearea vert", id: "deck", style: { verticalAlign: "top", display: "inline-block" }},
+				React.createElement("div", { className: "gamearea vert", id: "deck" },
 					React.createElement("h3", null, "The Deck"),
 					React.createElement("div", null, 
 						React.createElement("div", { className: "hanafudacard hidden", style: { display: playFromHand || !playFromDeck ? "inline-block" : "none" }}),
@@ -854,7 +1021,7 @@ function KoiKoiGame() {
 								React.createElement("button", { className: "clickable", onClick: () => handleClick(deck[0]) },
 									React.createElement("img", { src: deck[0]?.image }))))),
 
-				React.createElement("div", { className: "gamearea vert", id: "board", style: { verticalAlign: "top", display: "inline-block" }},
+				React.createElement("div", { className: "gamearea vert", id: "board", style: { width: "100%" }},
 					React.createElement("h3", null, "The Board"),
 					React.createElement("div", null, 
 						board.map((card) => 
@@ -877,20 +1044,6 @@ function KoiKoiGame() {
 							React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
 								React.createElement("img", { src: card.image })))))),
 
-			React.createElement("div", { className: "gamearea info", id: "scores" },
-				React.createElement("h3", null, "Scores"),
-				React.createElement("div", null, 
-					React.createElement("table", null,
-						React.createElement("tbody", null,
-							React.createElement("tr", null,
-								React.createElement("td", { className: "information" }, "You"),
-								yourScore.map((score) => 
-									React.createElement("td", { className: "information" }, score))),
-							React.createElement("tr", null,
-								React.createElement("td", { className: "information" }, "Opponent"),
-								opponentScore.map((score) => 
-									React.createElement("td", { className: "information" }, score))))))),
-
 			React.createElement("button", { className: "button", onClick: () => {
 				var d = document.getElementById("debug");
 				d.style.display = d.style.display == "none" ? "block" : "none";
@@ -908,11 +1061,12 @@ function KoiKoiGame() {
 				React.createElement("h3", null, "Turn/Player States"),
 				React.createElement("div", null, "turnStarted: " 		+ turnStarted.toString()),
 				React.createElement("div", null, "whoseTurn: " 			+ whoseTurn),
-				React.createElement("div", null, "koiKoiCaller: " 		+ koiKoiCaller),
 				React.createElement("div", null, "selectedCard: " 		+ (isEmpty(selectedCard) ? "none" : selectedCard.month + " " + selectedCard.name)),
 				React.createElement("div", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "playFromHand: " 		+ playFromHand.toString()),
 				React.createElement("div", null, "playFromDeck: " 		+ playFromDeck.toString()),
+				React.createElement("div", null, "promptKoiKoi: " 		+ promptKoiKoi.toString()),
+				React.createElement("div", null, "koiKoiCaller: " 		+ koiKoiCaller),
 				React.createElement("h3", null, "Opponent States"),
 				React.createElement("div", null, "opponentHand: " 		+ opponentHand.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "opponentCollection: " + opponentCollection.map(s => " " + s.month + " " + s.name)),

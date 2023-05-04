@@ -1,6 +1,5 @@
 .gamearea {
 	padding: 10;
-	margin: 2;
 	min-height: 220px;
 	border-color: lightgray;
 	border-style: solid;
@@ -13,12 +12,14 @@
 }
 
 .gamearea.vert {
-	margin: 1;
+	vertical-align: top;
+	display: table-cell;
+	min-width: 160px;
 }
 
 .hanafudacard {
-	height: 150;
-	width: 92;
+	height: 150px;
+	width: 92px;
 	margin: 2;
 	display: inline-block;
 }
