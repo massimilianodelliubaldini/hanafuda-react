@@ -498,8 +498,10 @@ function KoiKoiGame() {
 		console.log("decideToKoiKoi");
 
 		if (caller == "you") {
-			if (confirm("Do you want to Koi Koi?")) {
 
+			// A Fix For FireFox. See https://github.com/facebook/react/issues/17355.
+			var yes = setTimeout(() => confirm("Do you want to Koi Koi?"), 0)
+			if (yes) {
 				setKoiKoiCaller("you");
 				return true;
 			}
