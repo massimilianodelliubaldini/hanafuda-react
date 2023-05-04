@@ -587,8 +587,9 @@ function KoiKoiGame() {
 		yourScore.forEach(s => yourTotal += s);
 		opponentScore.forEach(s => opponentTotal += s);
 
-		setYourScore([...yourScore, yourTotal]);
-		setOpponentScore([...opponentScore, opponentTotal]);
+		// Set the total and a label for printing.
+		setYourScore([...yourScore, "Total ", yourTotal]);
+		setOpponentScore([...opponentScore, "Total ", opponentTotal]);
 
 		if (yourTotal > opponentTotal) {
 			console.log("You win!")
@@ -822,68 +823,77 @@ function KoiKoiGame() {
 
 	// The main render. The first element must be on the same line as return.
 	return React.createElement("div", { className: "koikoigame" },
-			React.createElement("div", null,
-				React.createElement("span", null, "Round " + roundNumber + " / 12"),
-				React.createElement("button", { onClick: () => setGameStarted(true), className: "button", style: { display: !gameStarted ?  "inline-block" : "none" }}, "Start a New Game"),
-				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round")),
+			React.createElement("div", { className: "gamearea info", id: "info" },
+				React.createElement("span", { className: "information" }, "Round " + roundNumber + " / 12"),
+				React.createElement("button", { onClick: () => setGameStarted(true), className: "button information", style: { display: !gameStarted ?  "inline-block" : "none" }}, "Start a New Game"),
+				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round")),
 			
-			React.createElement("h2", null, "Opponent's Hand"),
-			React.createElement("div", { id: "opponenthand" }, 
-				opponentHand.map((card) => 
-					React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }))),
+			React.createElement("div", { className: "gamearea", id: "opponenthand" },
+				React.createElement("h3", null, "Opponent's Hand"),
+				React.createElement("div", null, 
+					opponentHand.map((card) => 
+						React.createElement("div", { className: "hanafudacard hidden", style: { display: gameStarted && roundNumber == 0 ? "none" : "inline-block" }})),
+					React.createElement("div", { className: "hanafudacard", style: { display: gameStarted && roundNumber == 0 ? "inline-block" : "none" }}, 
+						React.createElement("img", { src: opponentHand[0]?.image })))),
 
-			React.createElement("h2", null, "Opponent's Collection"),
-			React.createElement("div", { id: "opponentcollection" }, 
-				opponentCollection.map((card) => 
-					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-						React.createElement("img", { src: card.image })))),
-
-			React.createElement("h2", null, "The Deck"),
-			React.createElement("div", { id: "deck" }, 
-				React.createElement("div", { style: { margin: 2, height: 150, width: 92, display: "inline-block", backgroundColor: "black"} }),
-				React.createElement("div", { className: "hanafudacard", style: { margin: 2, height: 150, width: 92, display: !playFromHand && playFromDeck ? "inline-block" : "none" }}, 
-						React.createElement("button", { onClick: () => handleClick(deck[0]), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
-							React.createElement("img", { src: deck[0].image })))),
-
-			React.createElement("h2", null, "The Board"),
-			React.createElement("div", { id: "board" }, 
-				board.map((card) => 
-					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+			React.createElement("div", { className: "gamearea", id: "opponentcollection" }, 
+				React.createElement("h3", null, "Opponent's Collection"),
+				React.createElement("div", null, 
+					opponentCollection.map((card) => 
+						React.createElement("div", { className: "hanafudacard" }, 
 							React.createElement("img", { src: card.image }))))),
 
-			React.createElement("h2", null, "Your Collection"),
-			React.createElement("div", { id: "yourcollection" }, 
-				yourCollection.map((card) => 
-					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }}, 
-						React.createElement("img", { src: card.image })))),
+			React.createElement("div", null,
+				React.createElement("div", { className: "gamearea vert", id: "deck", style: { verticalAlign: "top", display: "inline-block" }},
+					React.createElement("h3", null, "The Deck"),
+					React.createElement("div", null, 
+						React.createElement("div", { className: "hanafudacard hidden", style: { display: playFromHand || !playFromDeck ? "inline-block" : "none" }}),
+						React.createElement("div", { className: "hanafudacard", style: { display: !playFromHand && playFromDeck ? "inline-block" : "none" }}, 
+								React.createElement("button", { className: "clickable", onClick: () => handleClick(deck[0]) },
+									React.createElement("img", { src: deck[0]?.image }))))),
 
-			React.createElement("h2", null, "Your Hand"),
-			React.createElement("div", { id: "yourhand" }, 
-				yourHand.map((card) => 
-					React.createElement("div", { className: "hanafudacard", style: { height: 150, width: 92, margin: 2, display: "inline-block" }},
-						React.createElement("button", { onClick: () => handleClick(card), style: { height: "inherit", width: "inherit", padding: 0, border: "none", background: "none" }},
+				React.createElement("div", { className: "gamearea vert", id: "board", style: { verticalAlign: "top", display: "inline-block" }},
+					React.createElement("h3", null, "The Board"),
+					React.createElement("div", null, 
+						board.map((card) => 
+							React.createElement("div", { className: "hanafudacard" }, 
+								React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
+									React.createElement("img", { src: card.image }))))))),
+
+			React.createElement("div", { className: "gamearea", id: "yourcollection" },
+				React.createElement("h3", null, "Your Collection"),
+				React.createElement("div", null, 
+					yourCollection.map((card) => 
+						React.createElement("div", { className: "hanafudacard" }, 
 							React.createElement("img", { src: card.image }))))),
 
-			React.createElement("h2", null, "Scores"),
-			React.createElement("div", { id: "scores" }, 
-				React.createElement("table", null,
-					React.createElement("tbody", null,
-						React.createElement("tr", null,
-							React.createElement("td", null, "You"),
-							yourScore.map((score) => 
-								React.createElement("td", null, score))),
-						React.createElement("tr", null,
-							React.createElement("td", null, "Opponent"),
-							opponentScore.map((score) => 
-								React.createElement("td", null, score)))))),
+			React.createElement("div", { className: "gamearea", id: "yourhand" },
+				React.createElement("h3", null, "Your Hand"),
+				React.createElement("div", null, 
+					yourHand.map((card) => 
+						React.createElement("div", { className: "hanafudacard" },
+							React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
+								React.createElement("img", { src: card.image })))))),
 
-			React.createElement("h2", null),
-			React.createElement("button", { onClick: () => {
+			React.createElement("div", { className: "gamearea info", id: "scores" },
+				React.createElement("h3", null, "Scores"),
+				React.createElement("div", null, 
+					React.createElement("table", null,
+						React.createElement("tbody", null,
+							React.createElement("tr", null,
+								React.createElement("td", { className: "information" }, "You"),
+								yourScore.map((score) => 
+									React.createElement("td", { className: "information" }, score))),
+							React.createElement("tr", null,
+								React.createElement("td", { className: "information" }, "Opponent"),
+								opponentScore.map((score) => 
+									React.createElement("td", { className: "information" }, score))))))),
+
+			React.createElement("button", { className: "button", onClick: () => {
 				var d = document.getElementById("debug");
 				d.style.display = d.style.display == "none" ? "block" : "none";
 			}}, "Toggle Debug Mode"),
-			React.createElement("div", { id: "debug", style: { display: "block" }},
+			React.createElement("div", { className: "gamearea info", id: "debug", style: { display: "none" }},
 				React.createElement("h2", null, "Debug Mode"),
 				React.createElement("h3", null, "Game States"),
 				React.createElement("div", null, "gameStarted: " 		+ gameStarted.toString()),
