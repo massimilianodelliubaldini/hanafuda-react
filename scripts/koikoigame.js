@@ -514,6 +514,13 @@ function KoiKoiGame() {
 
 		setSelectedCard(deck[0]);
 		setAvailableMatches(board.filter(c => c.month == deck[0].month));
+
+		if (whoseTurn == "you") {
+			appendUserMessage("You revealed " + deck[0].name + ". ");
+		}
+		else {
+			appendUserMessage("Opponent revealed " + deck[0].name + ". ");
+		}
 	};
 
 	const checkForCompletedSets = () => {
@@ -909,7 +916,7 @@ function KoiKoiGame() {
 				decideToKoiKoi("opponent", true);
 			}
 			else {
-				decideToKoiKoi("opponent", true);
+				decideToKoiKoi("opponent", false);
 			}
 		}
 	};
