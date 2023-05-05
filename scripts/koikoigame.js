@@ -530,72 +530,92 @@ function KoiKoiGame() {
 		completedSets.forEach(s => s.calculatePoints = allSets.find(a => a.id == s.id)?.calculatePoints);
 
 		/*
-			We want to find sets you haven't already completed, except for those that calculate their points,
-			but only if you've captured more of their respective category after you call Koi Koi.
+			We find sets where you meet the requirements, calculate the point values, and store those values.
+			Then we filter those sets down to ones you haven't completed before, or ones you have completed
+			but have gained more points for (see Slips, Seeds, and Chaff).
 		*/
 		if (whoseTurn == "you") {
 			completedSets = completedSets.filter(s => s.meetsRequirement(yourCollection));
 			completedSets.forEach(s => s.storedPoints = s.calculatePoints(yourCollection));
 			completedSets = completedSets.filter(s => s.storedPoints > (yourSets.find(y => y.id == s.id)?.storedPoints || 0));
-
-			//!yourSets.map(y => y.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
 		}
 		else {
 			completedSets = completedSets.filter(s => s.meetsRequirement(opponentCollection));
 			completedSets.forEach(s => s.storedPoints = s.calculatePoints(opponentCollection));
 			completedSets = completedSets.filter(s => s.storedPoints > (opponentSets.find(o => o.id == s.id)?.storedPoints || 0));
-
-			//!opponentSets.map(o => o.id).includes(s.id) || ["P", "S", "C"].includes(s.id));
 		}
 		
 		if (completedSets.length > 0) {
 
 			// Helper function to ensure uniqueness and maximum value of every completed set.
-			var reduceSets = function(sets) {
-				var reducedSet = sets.reduce((newSets, set) => {
-					
-					var foundItem = newSets.find(i => i.id == set.id);
-					if (foundItem) {
-						foundItem.storedPoints = Math.max(set.storedPoints, foundItem.storedPoints); // Shortcut, these objects are mostly the same anyway.
+			var reduceSets = function(setsToReduce) {
+				var reducedSet = setsToReduce.reduce((filteredSets, setToFilter) => {
+
+					var foundSet = filteredSets.find(s => s.id == setToFilter.id);
+					if (foundSet) {
+						foundSet.storedPoints = Math.max(setToFilter.storedPoints, foundSet.storedPoints); // Shortcut, these objects are mostly the same anyway.
 					}
 					else {
-						newSets.push(set);
+						filteredSets.push(setToFilter);
 					}
 
-                    return newSets;
+                    return filteredSets;
 				}, []);
 
 				return reducedSet;
 			};
 
-			var cardsToContinue = 0;
 			if (whoseTurn == "you") {
 				setYourSets(reduceSets([...yourSets, ...completedSets]));
-				cardsToContinue = yourHand.length;
 				um = "You have completed the following sets: " + completedSets.map(s => " " + s.name) + ". ";
+
+				if (koiKoiCaller == "you") {
+					setRoundWinner("you");
+					setScoreMultiplier(1);
+					setTurnStarted(false);
+				}
+				else if (koiKoiCaller == "opponent") {
+					setRoundWinner("you");
+					setScoreMultiplier(2);
+					setTurnStarted(false);
+				}
+				else {
+					if (yourHand.length == 0) {
+						setRoundWinner("you");
+						setScoreMultiplier(1);
+						setTurnStarted(false);
+					}
+					else {
+
+						// The turn does not end until a decision to Koi Koi is made.
+						setPromptKoiKoi(true);
+					}
+				}
 			}
 			else {
 				setOpponentSets(reduceSets([...opponentSets, ...completedSets]));
-				cardsToContinue = opponentHand.length;
 				um = "Opponent has completed the following sets: " + completedSets.map(s => " " + s.name) + ". ";
-			}
 
-			if (koiKoiCaller == "" && cardsToContinue > 0) {
-
-				// The turn does not end until a decision to Koi Koi is made.
-				setPromptKoiKoi(true);
-			}
-			else {
-				if (koiKoiCaller == whoseTurn) {
-					setRoundWinner(whoseTurn);
+				if (koiKoiCaller == "opponent") {
+					setRoundWinner("opponent");
 					setScoreMultiplier(1);
+					setTurnStarted(false);
+				}
+				else if (koiKoiCaller == "you") {
+					setRoundWinner("opponent");
+					setScoreMultiplier(2);
+					setTurnStarted(false);
 				}
 				else {
-					setRoundWinner(whoseTurn);
-					setScoreMultiplier(2);
+					if (yourHand.length == 0) {
+						setRoundWinner("opponent");
+						setScoreMultiplier(1);
+						setTurnStarted(false);
+					}
+					else {
+						setPromptKoiKoi(true);
+					}
 				}
-
-				setTurnStarted(false);
 			}
 		}
 		else {
@@ -606,6 +626,7 @@ function KoiKoiGame() {
 				setScoreMultiplier(0);
 			}
 
+			// Otherwise, the end of a normal turn: nothing eventful happens.
 			setTurnStarted(false);
 		}
 
