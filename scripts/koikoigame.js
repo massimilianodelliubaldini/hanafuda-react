@@ -325,6 +325,8 @@ function KoiKoiGame() {
 
 			setYourSets([]);
 			setOpponentSets([]);
+
+			replaceUserMessage("");
 		}
 
 		setYourCollection([]);
@@ -334,7 +336,6 @@ function KoiKoiGame() {
 		setAvailableMatches([]);	
 		setKoiKoiCaller("");
 
-		replaceUserMessage("");
 		setRoundNumber(roundNumber + 1);	
 	};
 
@@ -342,6 +343,7 @@ function KoiKoiGame() {
 		console.log("checkForPreRoundSets");
 
 		var endEarly = false;
+		var um = "";
 
 		// Check the board first.
 		var boardPreSets = [...preRoundSets].filter(s => s.meetsRequirement(boardsEight));
@@ -349,27 +351,31 @@ function KoiKoiGame() {
 
 			setRoundWinner("stalemate");
 			setScoreMultiplier(0);
+			um = "The board was dealt the following pre-round set: " + boardPreSets.map(s => " " + s.name) + ". ";
 			endEarly = true;
 		}
 
 		var yourPreSets = [...preRoundSets].filter(s => s.meetsRequirement(yourEight));
-		if (yourPreSets.length > 0) {
+		if (yourPreSets.length > 0 && !endEarly) {
 
 			setYourSets([...yourPreSets]);
 			setRoundWinner("you");
 			setScoreMultiplier(1);
+			um = "You were dealt the following pre-round set: " + yourPreSets.map(s => " " + s.name) + ". ";
 			endEarly = true;
 		}
 
 		var opponentPreSets = [...preRoundSets].filter(s => s.meetsRequirement(opponentsEight));
-		if (opponentPreSets.length > 0) {
+		if (opponentPreSets.length > 0 && !endEarly) {
 
 			setOpponentSets([...opponentPreSets]);
 			setRoundWinner("opponent");
 			setScoreMultiplier(1);
+			um = "Opponent was dealt the following pre-round set: " + opponentPreSets.map(s => " " + s.name) + ". ";
 			endEarly = true;
 		}
 
+		replaceUserMessage(um);
 		return endEarly; 
 	};
 
