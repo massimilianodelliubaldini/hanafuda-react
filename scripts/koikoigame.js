@@ -78,12 +78,12 @@ const allCards = [
 const allSets = [
 
 	/* jp. Gokoh */ 					{ id: "5L",		key: "5L",		name: "Five Lights",					storedPoints: 0, calculatePoints: (collection) => { return 15;	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 5); }},
-	/* jp. Shikoh */ 					{ id: "4L",		key: "4L",		name: "Four Lights",					storedPoints: 0, calculatePoints: (collection) => { return 8; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) && !containsCard(collection, "11-L") }},
-	/* jp. Ame-Shikoh */ 				{ id: "4LR",	key: "4LR",		name: "Four Lights with Rain",			storedPoints: 0, calculatePoints: (collection) => { return 7; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) &&  containsCard(collection, "11-L") }},
-	/* jp. Sankoh */ 					{ id: "3L",		key: "3L",		name: "Three Lights",					storedPoints: 0, calculatePoints: (collection) => { return 6; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 3) && !containsCard(collection, "11-L") }},
-	/* jp. Tsukimi-Zake */ 				{ id: "MV",		key: "MV",		name: "Moon Viewing",					storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "8-L") }},
-	/* jp. Hanami-Zake */ 				{ id: "CBV",	key: "CBV",		name: "Cherry Blossom Viewing",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "9-S") && containsCard(collection, "3-L") }},
-	/* jp. Inoshikachoh */ 				{ id: "BDB",	key: "BDB",		name: "Boar Deer Butterflies",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCard(collection, "7-S") && containsCard(collection, "10-S") && containsCard(collection, "6-S") }},
+	/* jp. Shikoh */ 					{ id: "4L",		key: "4L",		name: "Four Lights",					storedPoints: 0, calculatePoints: (collection) => { return 8; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) && !containsCardName(collection, "Ono no Michikaze") }},
+	/* jp. Ame-Shikoh */ 				{ id: "4LR",	key: "4LR",		name: "Four Lights with Rain",			storedPoints: 0, calculatePoints: (collection) => { return 7; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 4) &&  containsCardName(collection, "Ono no Michikaze") }},
+	/* jp. Sankoh */ 					{ id: "3L",		key: "3L",		name: "Three Lights",					storedPoints: 0, calculatePoints: (collection) => { return 6; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 3) && !containsCardName(collection, "Ono no Michikaze") }},
+	/* jp. Tsukimi-Zake */ 				{ id: "MV",		key: "MV",		name: "Moon Viewing",					storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCardName(collection, "Sake Cup")	&& containsCardName(collection, "Moon") }},
+	/* jp. Hanami-Zake */ 				{ id: "CBV",	key: "CBV",		name: "Cherry Blossom Viewing",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCardName(collection, "Sake Cup")	&& containsCardName(collection, "Curtain") }},
+	/* jp. Inoshikachoh */ 				{ id: "BDB",	key: "BDB",		name: "Boar Deer Butterflies",			storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsCardName(collection, "Boar")		&& containsCardName(collection, "Deer") && containsCardName(collection, "Butterflies") }},
 	/* jp. Akatan Aotan no Choufuku */ 	{ id: "AAC",	key: "AAC",		name: "Red and Blue Poetry Slips",		storedPoints: 0, calculatePoints: (collection) => { return 10; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3) && containsAtLeast(collection, (card) => card.isBlue, 3); }},
 	/* jp. Akatan */ 					{ id: "RP",		key: "RP",		name: "Red Poetry Slips",				storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isPoetry,	3);		}},
 	/* jp. Aotan */ 					{ id: "BP",		key: "BP",		name: "Blue Poetry Slips",				storedPoints: 0, calculatePoints: (collection) => { return 5; 	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isBlue,	3);		}},
@@ -124,10 +124,6 @@ const allMonths = [
 	"December",
 ];
 
-var isEmpty = function(obj) {
-	return Object.keys(obj).length == 0;
-}
-
 var countCards = function(collection, predicate) {
 	return collection.filter(predicate).length;
 };							
@@ -136,8 +132,13 @@ var containsAtLeast = function(collection, predicate, numInstances) {
 	return countCards(collection, predicate) >= numInstances;
 };
 
-var containsCard = function(collection, cardId) {
+var containsCardId = function(collection, cardId) {
 	return containsAtLeast(collection, (card) => card.id == cardId, 1);
+};
+
+// Should only be used with cards with unique names, primarily for checking set requirements.
+var containsCardName = function(collection, cardName) {
+	return containsAtLeast(collection, (card) => card.name == cardName, 1);
 };
 
 var containsFourOfAKind = function(collection) {
@@ -572,7 +573,7 @@ function KoiKoiGame() {
 						filteredSets.push(setToFilter);
 					}
 
-                    return filteredSets;
+					return filteredSets;
 				}, []);
 
 				return reducedSet;
@@ -793,7 +794,7 @@ function KoiKoiGame() {
 		if (playFromHand) {
 
 			// Is the card you clicked in your hand or on the board?
-			if (containsCard(yourHand, card.id)) {
+			if (containsCardId(yourHand, card.id)) {
 
 				// Have you clicked on the selected card?
 				if (selectedCard.id == card.id) {
@@ -830,7 +831,7 @@ function KoiKoiGame() {
 				else {
 
 					// Is your clicked card an available match?
-					if (containsCard(availableMatches, card.id)) {
+					if (containsCardId(availableMatches, card.id)) {
 
 						// Capture the matching cards.
 						captureMatchingCards(selectedCard, card);
@@ -845,14 +846,14 @@ function KoiKoiGame() {
 		else if (playFromDeck) {
 
 			// Is the card you clicked in your hand or on the board?
-			if (containsCard(yourHand, card.id)) {
+			if (containsCardId(yourHand, card.id)) {
 
 				appendUserMessage("You cannot select cards when playing from the deck.");
 			}
-			else if (containsCard(board, card.id)) {
+			else if (containsCardId(board, card.id)) {
 
 				// Is your clicked card an available match?
-				if (containsCard(availableMatches, card.id)) {
+				if (containsCardId(availableMatches, card.id)) {
 
 					// Capture the matching cards.
 					captureMatchingCards(selectedCard, card);
@@ -890,41 +891,43 @@ function KoiKoiGame() {
 		var sortByPoints = function(x, y) { return x.points < y.points ? 1 : x.points > y.points ? -1 : 0; };
 		var matches = [];
 
-		if (playFromHand) {	
-			var hand = opponentHand.sort(sortByPoints);
-			for (var card of hand) {
+		setTimeout(() => {
+			if (playFromHand) {	
+				var hand = opponentHand.sort(sortByPoints);
+				for (var card of hand) {
+					matches = board
+						.filter(c => c.month == card.month)
+						.sort(sortByPoints);
+					if (matches.length > 0) {
+						captureMatchingCards(card, matches[0]);
+						break;
+					} 
+					else if (hand.indexOf(card) == hand.length - 1) {
+						surrenderSelectedCard(card);
+					}
+				}
+			}
+			else if (playFromDeck) {
+				var card = deck[0];
 				matches = board
 					.filter(c => c.month == card.month)
 					.sort(sortByPoints);
 				if (matches.length > 0) {
 					captureMatchingCards(card, matches[0]);
-					break;
 				} 
-				else if (hand.indexOf(card) == hand.length - 1) {
+				else {
 					surrenderSelectedCard(card);
 				}
 			}
-		}
-		else if (playFromDeck) {
-			var card = deck[0];
-			matches = board
-				.filter(c => c.month == card.month)
-				.sort(sortByPoints);
-			if (matches.length > 0) {
-				captureMatchingCards(card, matches[0]);
-			} 
-			else {
-				surrenderSelectedCard(card);
+			else if (promptKoiKoi) {
+				if (opponentHand.length > 3) {
+					decideToKoiKoi("opponent", true);
+				}
+				else {
+					decideToKoiKoi("opponent", false);
+				}
 			}
-		}
-		else if (promptKoiKoi) {
-			if (opponentHand.length > 3) {
-				decideToKoiKoi("opponent", true);
-			}
-			else {
-				decideToKoiKoi("opponent", false);
-			}
-		}
+		}, 1500);
 	};
 	
 	// UseEffect might be my least favorite part about React. Will look for better implementations of this.
@@ -967,15 +970,24 @@ function KoiKoiGame() {
 
 	React.useEffect(() => {
 		if (gameStarted && roundStarted && turnStarted) {	
+			for (card of document.getElementsByClassName("hanafudacard")) {
+				if (availableMatches.map(c => c.id).includes(card.id) || 
+					selectedCard?.id == card.id) {
+					card.style.transform = "scale(1.15)";
+				} else {
+					card.style.transform = "scale(1.0)";
+				}
+			}
+		}
+	}, [selectedCard, availableMatches]);
 
+	React.useEffect(() => {
+		if (gameStarted && roundStarted && turnStarted) {	
 			if (!playFromHand && !playFromDeck && !promptKoiKoi) {
 				checkForCompletedSets();
 			}
 			else if (!playFromHand && playFromDeck && !promptKoiKoi) {
 				revealTopDeck();
-			}
-			else if (!playFromHand && !playFromDeck && promptKoiKoi) {
-				console.log("should prompt for koikoi")
 			}
 		}
 		else {
@@ -1012,9 +1024,9 @@ function KoiKoiGame() {
 			React.createElement("div", { className: "gamearea info", id: "info" },
 				React.createElement("span", { className: "information" }, "Round " + roundNumber + " / 12"),
 				React.createElement("button", { onClick: () => setGameStarted(true), className: "button information", style: { display: !gameStarted ? "inline-block" : "none" }}, "Start a New Game"),
-				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ?  "inline-block" : "none" }}, "Start a New Round"),
+				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ? "inline-block" : "none" }}, "Start a New Round"),
 				React.createElement("button", { onClick: () => decideToKoiKoi("you", true), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "'Koi Koi!'"),
-				React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ?  "inline-block" : "none" }}, "Finish Round"),
+				React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "Finish Round"),
 				React.createElement("i", { className: "information" }, userMessage)),
 			
 			React.createElement("div", { className: "gamearea info", id: "scores" },
@@ -1033,25 +1045,25 @@ function KoiKoiGame() {
 
 			React.createElement("div", { className: "gamearea", id: "opponenthand" },
 				React.createElement("h3", null, "Opponent's Hand"),
-				React.createElement("div", null, 
+				React.createElement("div", null, gameStarted && roundNumber > 0 ?
 					opponentHand.map((card) => 
-						React.createElement("div", { className: "hanafudacard hidden", style: { display: gameStarted && roundNumber == 0 ? "none" : "inline-block" }})),
-					React.createElement("div", { className: "hanafudacard", style: { display: gameStarted && roundNumber == 0 ? "inline-block" : "none" }}, 
+						React.createElement("div", { className: "hanafudacard hidden" })) :
+					React.createElement("div", { className: "hanafudacard", id: opponentHand[0]?.id }, 
 						React.createElement("img", { src: opponentHand[0]?.image })))),
 
 			React.createElement("div", { className: "gamearea", id: "opponentcollection" }, 
 				React.createElement("h3", null, "Opponent's Collection"),
 				React.createElement("div", null, 
 					opponentCollection.map((card) => 
-						React.createElement("div", { className: "hanafudacard" }, 
+						React.createElement("div", { className: "hanafudacard", id: card.id }, 
 							React.createElement("img", { src: card.image }))))),
 
 			React.createElement("div", null,
 				React.createElement("div", { className: "gamearea vert", id: "deck" },
 					React.createElement("h3", null, "The Deck"),
-					React.createElement("div", null, 
-						React.createElement("div", { className: "hanafudacard hidden", style: { display: playFromHand || !playFromDeck ? "inline-block" : "none" }}),
-						React.createElement("div", { className: "hanafudacard", style: { display: !playFromHand && playFromDeck ? "inline-block" : "none" }}, 
+					React.createElement("div", null, playFromHand || !playFromDeck ?
+						React.createElement("div", { className: "hanafudacard hidden" }) :
+						React.createElement("div", { className: "hanafudacard", id: deck[0]?.id }, 
 								React.createElement("button", { className: "clickable", onClick: () => handleClick(deck[0]) },
 									React.createElement("img", { src: deck[0]?.image }))))),
 
@@ -1059,7 +1071,7 @@ function KoiKoiGame() {
 					React.createElement("h3", null, "The Board"),
 					React.createElement("div", null, 
 						board.map((card) => 
-							React.createElement("div", { className: "hanafudacard" }, 
+							React.createElement("div", { className: "hanafudacard", id: card.id }, 
 								React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
 									React.createElement("img", { src: card.image }))))))),
 
@@ -1067,14 +1079,14 @@ function KoiKoiGame() {
 				React.createElement("h3", null, "Your Collection"),
 				React.createElement("div", null, 
 					yourCollection.map((card) => 
-						React.createElement("div", { className: "hanafudacard" }, 
+						React.createElement("div", { className: "hanafudacard", id: card.id }, 
 							React.createElement("img", { src: card.image }))))),
 
 			React.createElement("div", { className: "gamearea", id: "yourhand" },
 				React.createElement("h3", null, "Your Hand"),
 				React.createElement("div", null, 
 					yourHand.map((card) => 
-						React.createElement("div", { className: "hanafudacard" },
+						React.createElement("div", { className: "hanafudacard", id: card.id },
 							React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
 								React.createElement("img", { src: card.image })))))),
 
@@ -1095,7 +1107,7 @@ function KoiKoiGame() {
 				React.createElement("h3", null, "Turn/Player States"),
 				React.createElement("div", null, "turnStarted: " 		+ turnStarted.toString()),
 				React.createElement("div", null, "whoseTurn: " 			+ whoseTurn),
-				React.createElement("div", null, "selectedCard: " 		+ (isEmpty(selectedCard) ? "none" : selectedCard.month + " " + selectedCard.name)),
+				React.createElement("div", null, "selectedCard: " 		+ (selectedCard?.id == null ? "none" : selectedCard.month + " " + selectedCard.name)),
 				React.createElement("div", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
 				React.createElement("div", null, "playFromHand: " 		+ playFromHand.toString()),
 				React.createElement("div", null, "playFromDeck: " 		+ playFromDeck.toString()),
@@ -1115,5 +1127,10 @@ function KoiKoiGame() {
 				React.createElement("div", null, "yourScore: " 			+ yourScore.map(s => " " + s)),
 				React.createElement("div", null, "yourSets: " 			+ yourSets.map(s => " " + s.name)),
 				),
+
+			React.createElement("button", { className: "button", onClick: () => {
+				var b = document.getElementsByTagName("body")[0];
+				b.style.backgroundImage = b.style.backgroundImage == "" ? "url(./sake.png)" : "";
+			}}, "Toggle Background Image"),
 	);
 }
