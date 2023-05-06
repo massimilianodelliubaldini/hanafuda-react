@@ -1,3 +1,7 @@
+* {
+	font-family: "Noto Serif", Times, serif;
+}
+
 .gamearea {
 	padding: 10;
 	margin-top: 2px;
@@ -17,7 +21,14 @@
 	vertical-align: top;
 	display: table-cell;
 	white-space: nowrap;
+}
+
+.gamearea.vert.left {
 	min-width: 168px;
+}
+
+.gamearea.vert.right {
+	width: 100%;
 }
 
 .hanafudacard {
@@ -47,7 +58,7 @@ td.information {
 	padding-right: 20px;
 }
 
-h1, h2, h3 {
+h1, h3 {
 	margin-top: 0px;
 	margin-bottom: 10px;
 }
@@ -62,30 +73,45 @@ p {
 	margin-bottom: 0px;
 }
 
-* {
-	font-family: "Noto Serif", Times, serif;
-}
+@media screen and (max-width: 980px) {
 
-@media screen and (max-width: 1280px) {
+	.button {
+		width: -webkit-fill-available;
+		width: -moz-available;
+		height: 16vw;
+		font-size: 4vw;
+	}
+
+	.gamearea {
+		min-height: 42vw;
+	}
+
+	.gamearea.vert, .gamearea.vert.left, .gamearea.vert.right {
+		display: block;
+		margin-bottom: 0vw;
+		white-space: normal;
+		width: auto;
+	}
+
+	.hanafudacard {
+		height: 32.6vw;
+		width: 20vw;
+	}
+
+	.information {
+		font-size: 4vw;
+	}
+
+	td.information {
+		padding-right: 2vw;
+	}
+
 	h1 {
 		font-size: 6vw;
 	}
 
-	h2 {
-		font-size: 4vw;
-	}
-
 	h3 {
-		font-size: 3vw;
-	}
-
-	p, td, span, i, button {
-		font-size: 2vw;
-	}
-
-	.hanafudacard {
-		height: 13vw;
-		width: 8vw;
+		font-size: 4vw;
 	}
 }
 

@@ -1021,17 +1021,20 @@ function KoiKoiGame() {
 
 	// The main render. The first element must be on the same line as return.
 	return React.createElement("div", { className: "koikoigame" },
+			React.createElement("button", { onClick: () => setGameStarted(true), className: "button", style: { display: !gameStarted ? "inline-block" : "none" }}, "Start a New Game"),
+			React.createElement("button", { onClick: () => setRoundStarted(true), className: "button", style: { display: gameStarted && !roundStarted ? "inline-block" : "none" }}, "Start a New Round"),
+			React.createElement("button", { onClick: () => decideToKoiKoi("you", true), className: "button", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "'Koi Koi!'"),
+			React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "Finish Round"),
+	
+
 			React.createElement("div", { className: "gamearea info", id: "info" },
-				React.createElement("span", { className: "information" }, "Round " + roundNumber + " / 12"),
-				React.createElement("button", { onClick: () => setGameStarted(true), className: "button information", style: { display: !gameStarted ? "inline-block" : "none" }}, "Start a New Game"),
-				React.createElement("button", { onClick: () => setRoundStarted(true), className: "button information", style: { display: gameStarted && !roundStarted ? "inline-block" : "none" }}, "Start a New Round"),
-				React.createElement("button", { onClick: () => decideToKoiKoi("you", true), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "'Koi Koi!'"),
-				React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button information", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "Finish Round"),
-				React.createElement("i", { className: "information" }, userMessage)),
+				React.createElement("p", { className: "information" }, "Round " + roundNumber + " / 12"),
+				React.createElement("p", { className: "information" }, 
+					React.createElement("i", { className: "information" }, userMessage))),
 			
 			React.createElement("div", { className: "gamearea info", id: "scores" },
 				React.createElement("h3", null, "Scores"),
-				React.createElement("div", null, 
+				React.createElement("div", { style: { overflowX: "auto" } }, 
 					React.createElement("table", null,
 						React.createElement("tbody", null,
 							React.createElement("tr", null,
@@ -1059,7 +1062,7 @@ function KoiKoiGame() {
 							React.createElement("img", { src: card.image }))))),
 
 			React.createElement("div", null,
-				React.createElement("div", { className: "gamearea vert", id: "deck" },
+				React.createElement("div", { className: "gamearea vert left", id: "deck" },
 					React.createElement("h3", null, "The Deck"),
 					React.createElement("div", null, playFromHand || !playFromDeck ?
 						React.createElement("div", { className: "hanafudacard hidden" }) :
@@ -1067,7 +1070,7 @@ function KoiKoiGame() {
 								React.createElement("button", { className: "clickable", onClick: () => handleClick(deck[0]) },
 									React.createElement("img", { src: deck[0]?.image }))))),
 
-				React.createElement("div", { className: "gamearea vert", id: "board", style: { width: "100%" }},
+				React.createElement("div", { className: "gamearea vert right", id: "board" },
 					React.createElement("h3", null, "The Board"),
 					React.createElement("div", null, 
 						board.map((card) => 
@@ -1090,45 +1093,45 @@ function KoiKoiGame() {
 							React.createElement("button", { className: "clickable", onClick: () => handleClick(card) },
 								React.createElement("img", { src: card.image })))))),
 
-			React.createElement("button", { className: "button information", onClick: () => {
+			React.createElement("button", { className: "button", onClick: () => {
 				var d = document.getElementById("debug");
 				d.style.display = d.style.display == "none" ? "block" : "none";
 			}}, "Toggle Debug Mode"),
 			React.createElement("div", { className: "gamearea info", id: "debug", style: { display: "none" }},
-				React.createElement("h2", null, "Debug Mode"),
+				React.createElement("h1", null, "Debug Mode"),
 				React.createElement("h3", null, "Game States"),
-				React.createElement("p", null, "gameStarted: " 			+ gameStarted.toString()),
+				React.createElement("p", { className: "information" }, "gameStarted: " 			+ gameStarted.toString()),
 				React.createElement("h3", null, "Round States"),
-				React.createElement("p", null, "roundStarted: " 		+ roundStarted.toString()),
-				React.createElement("p", null, "roundNumber: " 			+ roundNumber),
-				React.createElement("p", null, "roundWinner: "			+ roundWinner),
-				React.createElement("p", null, "scoreMultiplier: "		+ scoreMultiplier),
-				React.createElement("p", null, "dealer: " 				+ dealer),
+				React.createElement("p", { className: "information" }, "roundStarted: " 		+ roundStarted.toString()),
+				React.createElement("p", { className: "information" }, "roundNumber: " 			+ roundNumber),
+				React.createElement("p", { className: "information" }, "roundWinner: "			+ roundWinner),
+				React.createElement("p", { className: "information" }, "scoreMultiplier: "		+ scoreMultiplier),
+				React.createElement("p", { className: "information" }, "dealer: " 				+ dealer),
 				React.createElement("h3", null, "Turn/Player States"),
-				React.createElement("p", null, "turnStarted: " 			+ turnStarted.toString()),
-				React.createElement("p", null, "whoseTurn: " 			+ whoseTurn),
-				React.createElement("p", null, "selectedCard: " 		+ (selectedCard?.id == null ? "none" : selectedCard.month + " " + selectedCard.name)),
-				React.createElement("p", null, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
-				React.createElement("p", null, "playFromHand: " 		+ playFromHand.toString()),
-				React.createElement("p", null, "playFromDeck: " 		+ playFromDeck.toString()),
-				React.createElement("p", null, "promptKoiKoi: " 		+ promptKoiKoi.toString()),
-				React.createElement("p", null, "koiKoiCaller: " 		+ koiKoiCaller),
+				React.createElement("p", { className: "information" }, "turnStarted: " 			+ turnStarted.toString()),
+				React.createElement("p", { className: "information" }, "whoseTurn: " 			+ whoseTurn),
+				React.createElement("p", { className: "information" }, "selectedCard: " 		+ (selectedCard?.id == null ? "none" : selectedCard.month + " " + selectedCard.name)),
+				React.createElement("p", { className: "information" }, "availableMatches: " 	+ availableMatches.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "playFromHand: " 		+ playFromHand.toString()),
+				React.createElement("p", { className: "information" }, "playFromDeck: " 		+ playFromDeck.toString()),
+				React.createElement("p", { className: "information" }, "promptKoiKoi: " 		+ promptKoiKoi.toString()),
+				React.createElement("p", { className: "information" }, "koiKoiCaller: " 		+ koiKoiCaller),
 				React.createElement("h3", null, "Opponent States"),
-				React.createElement("p", null, "opponentHand: " 		+ opponentHand.map(s => " " + s.month + " " + s.name)),
-				React.createElement("p", null, "opponentCollection: "	+ opponentCollection.map(s => " " + s.month + " " + s.name)),
-				React.createElement("p", null, "opponentScore: " 		+ opponentScore.map(s => " " + s)),
-				React.createElement("p", null, "opponentSets: " 		+ opponentSets.map(s => " " + s.name)),
+				React.createElement("p", { className: "information" }, "opponentHand: " 		+ opponentHand.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "opponentCollection: "	+ opponentCollection.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "opponentScore: " 		+ opponentScore.map(s => " " + s)),
+				React.createElement("p", { className: "information" }, "opponentSets: " 		+ opponentSets.map(s => " " + s.name)),
 				React.createElement("h3", null, "Non-owned States"),
-				React.createElement("p", null, "deck: " 				+ deck.length + " cards remaining"),
-				React.createElement("p", null, "board: " 				+ board.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "deck: " 				+ deck.length + " cards remaining"),
+				React.createElement("p", { className: "information" }, "board: " 				+ board.map(s => " " + s.month + " " + s.name)),
 				React.createElement("h3", null, "Your States"),
-				React.createElement("p", null, "yourCollection: " 		+ yourCollection.map(s => " " + s.month + " " + s.name)),
-				React.createElement("p", null, "yourHand: " 			+ yourHand.map(s => " " + s.month + " " + s.name)),
-				React.createElement("p", null, "yourScore: " 			+ yourScore.map(s => " " + s)),
-				React.createElement("p", null, "yourSets: " 			+ yourSets.map(s => " " + s.name)),
+				React.createElement("p", { className: "information" }, "yourCollection: " 		+ yourCollection.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "yourHand: " 			+ yourHand.map(s => " " + s.month + " " + s.name)),
+				React.createElement("p", { className: "information" }, "yourScore: " 			+ yourScore.map(s => " " + s)),
+				React.createElement("p", { className: "information" }, "yourSets: " 			+ yourSets.map(s => " " + s.name)),
 				),
 
-			React.createElement("button", { className: "button information", onClick: () => {
+			React.createElement("button", { className: "button", onClick: () => {
 				var b = document.getElementsByTagName("body")[0];
 				b.style.backgroundImage = b.style.backgroundImage == "" ? "url(./sake.png)" : "";
 			}}, "Toggle Background Image"),
