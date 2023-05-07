@@ -1,11 +1,9 @@
-/*
-	This array contains all 48 standard cards in a Hanafuda deck.
-	Each card belongs to suit and a category.
-	There are 12 suits, each representing a month and a flower. Each suit contains 4 cards.
-	There are 4 categories: Light (jp. Hikari), Seed (jp. Tane), Slip (jp. Tanzaku), and Chaff (jp. Kasu). 
-	Not every suit contains one of each category.
-	There are 5 Lights, 9 Seeds, 10 Slips, and 24 Chaff.
-*/
+// This array contains all 48 standard cards in a Hanafuda deck.
+// Each card belongs to suit and a category.
+// There are 12 suits, each representing a month and a flower. Each suit contains 4 cards.
+// There are 4 categories: Light (jp. Hikari), Seed (jp. Tane), Slip (jp. Tanzaku), and Chaff (jp. Kasu). 
+// Not every suit contains one of each category.
+// There are 5 Lights, 9 Seeds, 10 Slips, and 24 Chaff.
 const allCards = [
 
 	{ id: "1-L",	key: "1-L",		month: "January",	flower: "Pine",				name: "Crane",				points: 20,	isLight: true , isSeed: false, isSlip: false, isPoetry: false, isBlue: false, isChaff: false, image: "https://upload.wikimedia.org/wikipedia/commons/1/15/Hanafuda_January_Hikari_Alt.svg" },
@@ -69,12 +67,10 @@ const allCards = [
 	{ id: "12-C3",	key: "12-C3",	month: "December",	flower: "Paulownia",		name: "Chaff",				points: 1,	isLight: false, isSeed: false, isSlip: false, isPoetry: false, isBlue: false, isChaff: true , image: "https://upload.wikimedia.org/wikipedia/commons/8/81/Hanafuda_December_Kasu_Alt.svg" },
 ];
 
-/*
-	This array contains all possible sets (jp. Yaku) that a player can make in Koi Koi. 
-	Each set contains a function (meetsRequirement) that allows you to determine if a given collection of cards forms the set.
-	Most sets provide a constant number of points, but several provide additional points for each instance of a card type (eg. Poetry Slips, 5 => 1, 6 => 2, etc). 
-	Two sets are not listed here as they are only dealt with before the round begins. 
-*/
+// This array contains all possible sets (jp. Yaku) that a player can make in Koi Koi. 
+// Each set contains a function (meetsRequirement) that allows you to determine if a given collection of cards forms the set.
+// Most sets provide a constant number of points, but several provide additional points for each instance of a card type (eg. Poetry Slips, 5 => 1, 6 => 2, etc). 
+// Two sets are not listed here as they are only dealt with before the round begins.
 const allSets = [
 
 	/* jp. Gokoh */ 					{ id: "5L",		key: "5L",		name: "Five Lights",					storedPoints: 0, calculatePoints: (collection) => { return 15;	},														meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isLight, 5); }},
@@ -93,22 +89,18 @@ const allSets = [
 	/* jp. Kasu */ 						{ id: "C",		key: "C",		name: "Chaff",							storedPoints: 0, calculatePoints: (collection) => { return countCards(collection, (card) => card.isChaff)	- 9;	},	meetsRequirement: (collection) => { return containsAtLeast(collection, (card) => card.isChaff,	10);	}},
 ];
 
-/*
-	There are two sets that can be completed just after dealing, before play begins.
-	Being dealt all four cards of the same suit (jp. Teshi) awards 6 points and immediately ends the round.
-	Being dealt four pairds of cards of matching suit (jp. Kuttsuki) awards 6 points and immediately ends the round.
-	However, if the board is dealt either of these sets, the round ends in a stalemate.
-	The winner becomes the dealer of the next round. In a stalemate, the dealer remains the same.
-*/
+// There are two sets that can be completed just after dealing, before play begins.
+// Being dealt all four cards of the same suit (jp. Teshi) awards 6 points and immediately ends the round.
+// Being dealt four pairs of cards of matching suit (jp. Kuttsuki) awards 6 points and immediately ends the round.
+// However, if the board is dealt either of these sets, the round ends in a stalemate.
+// The winner becomes the dealer of the next round. In a stalemate, the dealer remains the same.
 const preRoundSets = [
 
 	/* jp. Teshi */ 	{ id: "T",	key: "T",	name: "Four of a Kind",	storedPoints: 0, calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourOfAKind(collection); }},
 	/* jp. Kuttsuki */ 	{ id: "K",	key: "K",	name: "Four Pairs",		storedPoints: 0, calculatePoints: (collection) => { return 6;	},	meetsRequirement: (collection) => { return containsFourPairs(collection); }},
 ];
 
-/*
-	This array assists functions in dealing with suits.
-*/
+// This array assists functions in dealing with suits.
 const allMonths = [
 	"January",	
 	"February",	
@@ -175,21 +167,7 @@ var shuffleDeck = function(deck) {
 	return deck;
 };
 
-/*
-	This is the main React component. 
-
-	I opted for a functional component with state hooks b/c it is newer and therefore less likely to be deprecated.
-	However, React seems incredibly limiting - but not very protective - with regard to states.
-
-	State variables are not updated until the next render, but nothing prevents youfrom accessing a state 
-	before it's updated, steepening the learning curve, habitualizing the use of effect triggers, 
-	and impacting readability with non-sequential code.
-
-	Arrays/nested objects as states don't seem to respect functional updates (eg. (n => n + 1) instead of (n + 1)), 
-	a limitation which requires that I use more state variables than I would like, increasing code complexity.
-
-	So far React is not engendering a lot of love from me.
-*/
+// This is the main React component. I opted for a functional component with state hooks b/c it is newer and therefore less likely to be deprecated.
 function KoiKoiGame() {
 
 	// Game states.
@@ -246,12 +224,10 @@ function KoiKoiGame() {
 	const startGame = () => {
 		console.log("startGame");
 
-		/*
-			When the game begins, you determine the dealer by each player drawing a card from the deck.
-			The player with the earlier month is the dealer (jp. Oya).
-			If both players drew the same month, the one with the higher point value is the dealer.
-			The dealer has the privilege of taking the first turn (jp. Oya-Ken). 
-		*/
+		// When the game begins, you determine the dealer by each player drawing a card from the deck.
+		// The player with the earlier month is the dealer (jp. Oya).
+		// If both players drew the same month, the one with the higher point value is the dealer.
+		// The dealer has the privilege of taking the first turn (jp. Oya-Ken).
 		var yourCard = deck[0];
 		var opponentCard = deck[1];
 		var um = "";
@@ -398,11 +374,9 @@ function KoiKoiGame() {
 	const captureMatchingCards = (firstCard, secondCard) => {
 		console.log("captureMatchingCards");
 
-		/*
-			When the opponent plays from hand, they don't need to click to select cards in hand. If they never click, 
-			we never populate availableMatches, so the opponent would not able to capture the remaining cards 
-			of a whole-month sweep. To prevent this, we should always ensure we have all the matches. 
-		*/
+		// When the opponent plays from hand, they don't need to click to select cards in hand. If they never click, 
+		// we never populate availableMatches, so the opponent would not able to capture the remaining cards 
+		// of a whole-month sweep. To prevent this, we should always ensure we have all the matches. 
 		var matches = []; 
 		if (availableMatches.length > 0) {
 			matches = availableMatches;
@@ -535,19 +509,16 @@ function KoiKoiGame() {
 
 		var um = "";
 
-		/*
-			It is a crime that structuredClone cannot clone methods. I need a deep clone 
-			so that allSets[i].storedPoints isn't altered, but this is the best I can do.
-		*/
+		
+		// It is a crime that structuredClone cannot clone methods. I need a deep clone 
+		// so that allSets[i].storedPoints isn't altered, but this is the best I can do.
 		var completedSets = JSON.parse(JSON.stringify(allSets));
 		completedSets.forEach(s => s.meetsRequirement = allSets.find(a => a.id == s.id)?.meetsRequirement);
 		completedSets.forEach(s => s.calculatePoints = allSets.find(a => a.id == s.id)?.calculatePoints);
 
-		/*
-			We find sets where you meet the requirements, calculate the point values, and store those values.
-			Then we filter those sets down to ones you haven't completed before, or ones you have completed
-			but have gained more points for (see Slips, Seeds, and Chaff).
-		*/
+		// We find sets where you meet the requirements, calculate the point values, and store those values.
+		// Then we filter those sets down to ones you haven't completed before, or ones you have completed
+		// but have gained more points for (see Slips, Seeds, and Chaff).
 		if (whoseTurn == "you") {
 			completedSets = completedSets.filter(s => s.meetsRequirement(yourCollection));
 			completedSets.forEach(s => s.storedPoints = s.calculatePoints(yourCollection));
@@ -697,12 +668,10 @@ function KoiKoiGame() {
 		var newScore = 0;
 		var um = "";
 
-		/*
-			There are two opportunities for score multipliers.
-			If you win the round after your opponent called Koi Koi, you double your score. (This is parameterized.)
-			If you complete sets totalling 7 points or more, you double your score. (This is calculated here.)
-			These effects can stack leading to a quadruple multiplier.
-		*/
+		// There are two opportunities for score multipliers.
+		// If you win the round after your opponent called Koi Koi, you double your score. (This is determined by a state variable.)
+		// If you complete sets totalling 7 points or more, you double your score. (This is calculated here.)
+		// These effects can stack leading to a quadruple multiplier.
 		if (roundWinner == "you") {
 			yourSets.forEach(s => newScore += s.calculatePoints(yourCollection));
 
@@ -723,11 +692,9 @@ function KoiKoiGame() {
 		}
 		else {
 
-			/*
-				Don't forget possible stalemates, b/c of either a pre-round set on board, 
-				or because no sets were made by either player. 
-				In a stalemate, the dealer doesn't change.
-			*/
+			// Don't forget possible stalemates, b/c of either a pre-round set on board, 
+			// or because no sets were made by either player. 
+			// In a stalemate, the dealer doesn't change.
 			setYourScore([...yourScore, 0]);
 			setOpponentScore([...opponentScore, 0]);
 			um = "The round ended in a stalemate. ";
@@ -930,7 +897,7 @@ function KoiKoiGame() {
 		}, 1500);
 	};
 	
-	// UseEffect might be my least favorite part about React. Will look for better implementations of this.
+	// These useEffects govern the state of the game. 
 	React.useEffect(() => {
 		if (gameStarted) {
 			startGame();
@@ -1025,7 +992,6 @@ function KoiKoiGame() {
 			React.createElement("button", { onClick: () => setRoundStarted(true), className: "button", style: { display: gameStarted && !roundStarted ? "inline-block" : "none" }}, "Start a New Round"),
 			React.createElement("button", { onClick: () => decideToKoiKoi("you", true), className: "button", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "'Koi Koi!'"),
 			React.createElement("button", { onClick: () => decideToKoiKoi("you", false), className: "button", style: { display: gameStarted && roundStarted && whoseTurn == "you" && promptKoiKoi ? "inline-block" : "none" }}, "Finish Round"),
-	
 
 			React.createElement("div", { className: "gamearea info", id: "info" },
 				React.createElement("p", { className: "information" }, "Round " + roundNumber + " / 12"),
