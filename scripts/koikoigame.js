@@ -259,7 +259,27 @@ function KoiKoiGame() {
 		}
 
 		replaceUserMessage(um);
-		setGameStarted(true);
+
+		// Cleanup from a previous game, if it occured.
+		if (roundNumber > 0) {
+			setRoundNumber(0);
+			setRoundWinner("");
+			setScoreMultiplier(0);
+
+			setWhoseTurn("");
+			setKoiKoiCaller("");
+
+			setYourCollection([]);
+			setYourScore([]);
+			setYourSets([]);
+
+			setOpponentCollection([]);
+			setOpponentScore([]);
+			setOpponentSets([]);
+
+			setDeck(shuffleDeck([...allCards]));
+			setBoard([]);
+		}
 	};
 
 	const startRound = () => {

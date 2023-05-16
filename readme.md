@@ -1,5 +1,7 @@
 # Hanafuda in React
 
+[Run The App](https://mpm11011.github.io/hanafuda-react/)
+
 Hanafuda (jp. 花札) are traditional Japanese playing cards. A standard deck contains 48 cards. Each card belongs to suit and a category. There are 12 suits, each representing a month and a flower. Each suit contains 4 cards. There are 4 categories: Light (jp. 光, "Hikari"), Seed (jp. タネ, "Tane"), Slip (jp. 短冊, "Tanzaku"), and Chaff (jp. カス, "Kasu"). Not every suit contains one of each category. There are a total of 5 Lights, 9 Seeds, 10 Slips, and 24 Chaff.
 
 ## Koi Koi
